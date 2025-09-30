@@ -347,7 +347,7 @@ export default function BlackjackGame() {
                       setBetAmount(newAmount.toString())
                     }} 
                     variant="outline" 
-                    className="bg-yellow-600 border-yellow-700 text-white hover:bg-yellow-700 text-sm sm:text-base px-4 sm:px-5 py-2 font-semibold"
+                    className="bg-black border-gray-700 text-white hover:bg-gray-900 text-sm sm:text-base w-20 sm:w-24 py-3 font-semibold"
                   >
                     +5
                   </Button>
@@ -358,7 +358,7 @@ export default function BlackjackGame() {
                       setBetAmount(newAmount.toString())
                     }} 
                     variant="outline" 
-                    className="bg-yellow-600 border-yellow-700 text-white hover:bg-yellow-700 text-sm sm:text-base px-4 sm:px-5 py-2 font-semibold"
+                    className="bg-black border-gray-700 text-white hover:bg-gray-900 text-sm sm:text-base w-20 sm:w-24 py-3 font-semibold"
                   >
                     +25
                   </Button>
@@ -369,20 +369,20 @@ export default function BlackjackGame() {
                       setBetAmount(newAmount.toString())
                     }} 
                     variant="outline" 
-                    className="bg-yellow-600 border-yellow-700 text-white hover:bg-yellow-700 text-sm sm:text-base px-4 sm:px-5 py-2 font-semibold"
+                    className="bg-black border-gray-700 text-white hover:bg-gray-900 text-sm sm:text-base w-20 sm:w-24 py-3 font-semibold"
                   >
                     +100
                   </Button>
                   <Button 
                     onClick={() => setBetAmount('0')} 
                     variant="outline" 
-                    className="bg-gray-700 border-gray-600 text-white hover:bg-gray-600 text-sm sm:text-base px-4 sm:px-5 py-2 font-semibold"
+                    className="bg-black border-gray-700 text-white hover:bg-gray-900 text-sm sm:text-base w-20 sm:w-24 py-3 font-semibold"
                   >
                     Clear
                   </Button>
                 </div>
               </div>
-              <Button onClick={placeBet} size="lg" className="bg-green-600 hover:bg-green-700 text-white px-8 sm:px-10 py-5 sm:py-7 text-lg sm:text-xl font-bold shadow-lg">
+              <Button onClick={placeBet} size="lg" className="bg-white text-black hover:bg-gray-200 px-8 sm:px-10 py-5 sm:py-7 text-lg sm:text-xl font-bold shadow-lg">
                 Place Bet
               </Button>
             </div>
@@ -395,7 +395,7 @@ export default function BlackjackGame() {
                   onClick={hit} 
                   disabled={!gameState.canHit} 
                   size="lg"
-                  className="bg-red-600 hover:bg-red-700 text-white px-6 sm:px-8 py-4 sm:py-6 text-base sm:text-lg"
+                  className="bg-red-600 hover:bg-red-700 text-white w-28 sm:w-36 py-4 sm:py-6 text-base sm:text-lg font-bold"
                 >
                   Hit
                 </Button>
@@ -403,7 +403,7 @@ export default function BlackjackGame() {
                   onClick={stand} 
                   disabled={!gameState.canStand} 
                   size="lg"
-                  className="bg-gray-700 hover:bg-gray-600 text-white px-6 sm:px-8 py-4 sm:py-6 text-base sm:text-lg"
+                  className="bg-gray-700 hover:bg-gray-600 text-white w-28 sm:w-36 py-4 sm:py-6 text-base sm:text-lg font-bold"
                 >
                   Stand
                 </Button>
