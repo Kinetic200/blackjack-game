@@ -76,7 +76,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           .single()
 
         if (createError) {
-          console.error('❌ Error creating user:', createError)
+          console.error('❌ Error creating user - Full error:', createError)
+          console.error('   Error code:', createError.code)
+          console.error('   Error message:', createError.message)
+          console.error('   Error details:', createError.details)
+          console.error('   Error hint:', createError.hint)
           setLoading(false)
           return
         }
