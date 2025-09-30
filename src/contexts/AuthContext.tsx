@@ -27,7 +27,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null)
       if (session?.user) {
-        fetchGameUser(session.user.id)
+        fetchGameUser(session.user.id, session.user.email || '')
       } else {
         setLoading(false)
       }
