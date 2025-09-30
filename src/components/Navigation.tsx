@@ -17,16 +17,16 @@ export default function Navigation({ currentView, onViewChange }: NavigationProp
   }
 
   return (
-    <nav className="bg-black border-b border-gray-800 p-4">
-      <div className="max-w-6xl mx-auto flex justify-between items-center">
-        <div className="flex items-center gap-6">
-          <h1 className="text-white text-xl font-bold">Blackjack</h1>
-          <div className="flex gap-2">
+    <nav className="bg-black border-b border-gray-800 p-3 sm:p-4">
+      <div className="max-w-6xl mx-auto flex justify-between items-center gap-2">
+        <div className="flex items-center gap-2 sm:gap-6">
+          <h1 className="text-white text-base sm:text-xl font-bold">Blackjack</h1>
+          <div className="flex gap-1 sm:gap-2">
             <Button
               variant={currentView === 'game' ? 'default' : 'ghost'}
               size="sm"
               onClick={() => onViewChange('game')}
-              className={currentView === 'game' ? 'bg-white text-black hover:bg-gray-200' : 'text-gray-400 hover:text-white hover:bg-gray-900'}
+              className={`text-xs sm:text-sm px-2 sm:px-4 ${currentView === 'game' ? 'bg-white text-black hover:bg-gray-200' : 'text-gray-400 hover:text-white hover:bg-gray-900'}`}
             >
               Home
             </Button>
@@ -34,24 +34,24 @@ export default function Navigation({ currentView, onViewChange }: NavigationProp
               variant={currentView === 'history' ? 'default' : 'ghost'}
               size="sm"
               onClick={() => onViewChange('history')}
-              className={currentView === 'history' ? 'bg-white text-black hover:bg-gray-200' : 'text-gray-400 hover:text-white hover:bg-gray-900'}
+              className={`text-xs sm:text-sm px-2 sm:px-4 ${currentView === 'history' ? 'bg-white text-black hover:bg-gray-200' : 'text-gray-400 hover:text-white hover:bg-gray-900'}`}
             >
-              <History className="w-4 h-4 mr-2" />
-              History
+              <History className="w-3 h-3 sm:w-4 sm:h-4 sm:mr-2" />
+              <span className="hidden sm:inline">History</span>
             </Button>
           </div>
         </div>
 
-        <div className="flex items-center gap-4 text-gray-400">
-          <div className="flex items-center gap-2 text-sm">
-            <User className="w-4 h-4" />
-            <span>{gameUser?.email}</span>
+        <div className="flex items-center gap-2 sm:gap-4 text-gray-400">
+          <div className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm max-w-[100px] sm:max-w-none">
+            <User className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
+            <span className="hidden sm:inline truncate">{gameUser?.email}</span>
           </div>
           <Button
             variant="ghost"
             size="sm"
             onClick={handleSignOut}
-            className="text-gray-400 hover:text-white hover:bg-gray-900"
+            className="text-gray-400 hover:text-white hover:bg-gray-900 text-xs sm:text-sm px-2 sm:px-4"
           >
             Logout
           </Button>
