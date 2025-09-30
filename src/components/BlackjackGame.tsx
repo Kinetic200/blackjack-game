@@ -17,7 +17,6 @@ import { Input } from '@/components/ui/input'
 // Card UI components removed - not used in this component
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { toast } from 'sonner'
-import { getBlackjackAdvice } from '@/lib/gemini'
 import PlayingCard from './PlayingCard'
 
 export default function BlackjackGame() {
@@ -238,13 +237,26 @@ export default function BlackjackGame() {
     
     setLoadingAdvice(true)
     try {
-      const advice = await getBlackjackAdvice(
-        gameState.playerHand,
-        gameState.dealerHand[0],
-        gameState.currentBet,
-        gameState.chips
-      )
-      setAiAdvice(advice)
+      // Call API route instead of calling Gemini directly (keeps API key secure)
+      const response = await fetch('/api/advice', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          playerHand: gameState.playerHand,
+          dealerUpCard: gameState.dealerHand[0],
+          currentBet: gameState.currentBet,
+          chips: gameState.chips
+        })
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to get advice')
+      }
+
+      const data = await response.json()
+      setAiAdvice(data.advice)
     } catch {
       toast.error('Failed to get AI advice')
     } finally {
