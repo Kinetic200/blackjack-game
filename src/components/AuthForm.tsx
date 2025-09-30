@@ -52,18 +52,18 @@ export default function AuthForm() {
   }
 
   return (
-    <div className="min-h-screen bg-green-800 flex items-center justify-center p-4">
-      <Card className="w-full max-w-md">
+    <div className="min-h-screen bg-black flex items-center justify-center p-4">
+      <Card className="w-full max-w-md bg-gray-900 border-gray-800">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl">🃏 Blackjack Game</CardTitle>
-          <CardDescription>
+          <CardTitle className="text-3xl text-white font-bold">🃏 Blackjack</CardTitle>
+          <CardDescription className="text-gray-400 text-base">
             {isLogin ? 'Sign in to your account' : 'Create a new account and get 500 free chips!'}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email" className="text-white">Email</Label>
               <Input
                 id="email"
                 type="email"
@@ -71,11 +71,12 @@ export default function AuthForm() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 disabled={loading}
+                className="bg-gray-800 border-gray-700 text-white placeholder:text-gray-500"
               />
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password" className="text-white">Password</Label>
               <Input
                 id="password"
                 type="password"
@@ -83,19 +84,24 @@ export default function AuthForm() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 disabled={loading}
+                className="bg-gray-800 border-gray-700 text-white placeholder:text-gray-500"
               />
             </div>
 
-            <Button type="submit" className="w-full" disabled={loading}>
+            <Button 
+              type="submit" 
+              className="w-full bg-white text-black hover:bg-gray-200 h-12 text-base font-semibold" 
+              disabled={loading}
+            >
               {loading ? 'Loading...' : isLogin ? 'Sign In' : 'Sign Up'}
             </Button>
           </form>
 
-          <div className="mt-4 text-center">
+          <div className="mt-6 text-center">
             <button
               type="button"
               onClick={() => setIsLogin(!isLogin)}
-              className="text-sm text-blue-600 hover:underline"
+              className="text-sm text-gray-400 hover:text-white transition-colors"
               disabled={loading}
             >
               {isLogin 

@@ -117,10 +117,10 @@ export default function GameHistory({ onBack }: GameHistoryProps) {
 
   const getResultColor = (result: string) => {
     switch (result) {
-      case 'win': return 'text-green-600'
-      case 'lose': return 'text-red-600'
-      case 'push': return 'text-yellow-600'
-      default: return 'text-gray-600'
+      case 'win': return 'text-green-500'
+      case 'lose': return 'text-red-500'
+      case 'push': return 'text-yellow-500'
+      default: return 'text-gray-400'
     }
   }
 
@@ -135,17 +135,17 @@ export default function GameHistory({ onBack }: GameHistoryProps) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-green-800 flex items-center justify-center">
+      <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="text-white text-xl">Loading history...</div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-green-800 p-4">
-      <div className="max-w-4xl mx-auto">
-        <div className="mb-6 flex items-center gap-4">
-          <Button onClick={onBack} variant="outline" size="sm">
+    <div className="min-h-screen bg-black p-4">
+      <div className="max-w-6xl mx-auto">
+        <div className="mb-8 flex items-center gap-4">
+          <Button onClick={onBack} variant="outline" size="sm" className="bg-gray-900 border-gray-700 text-white hover:bg-gray-800">
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Game
           </Button>
@@ -154,38 +154,38 @@ export default function GameHistory({ onBack }: GameHistoryProps) {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-          <Card>
+          <Card className="bg-gray-900 border-gray-800">
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold">{stats.totalGames}</div>
-              <div className="text-sm text-gray-600">Total Games</div>
+              <div className="text-2xl font-bold text-white">{stats.totalGames}</div>
+              <div className="text-sm text-gray-400">Total Games</div>
             </CardContent>
           </Card>
-          <Card>
+          <Card className="bg-gray-900 border-gray-800">
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-green-600">{stats.wins}</div>
-              <div className="text-sm text-gray-600">Wins</div>
+              <div className="text-2xl font-bold text-green-500">{stats.wins}</div>
+              <div className="text-sm text-gray-400">Wins</div>
             </CardContent>
           </Card>
-          <Card>
+          <Card className="bg-gray-900 border-gray-800">
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold">{stats.winRate.toFixed(1)}%</div>
-              <div className="text-sm text-gray-600">Win Rate</div>
+              <div className="text-2xl font-bold text-white">{stats.winRate.toFixed(1)}%</div>
+              <div className="text-sm text-gray-400">Win Rate</div>
             </CardContent>
           </Card>
-          <Card>
+          <Card className="bg-gray-900 border-gray-800">
             <CardContent className="p-4 text-center">
-              <div className={`text-2xl font-bold ${stats.totalWinnings >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+              <div className={`text-2xl font-bold ${stats.totalWinnings >= 0 ? 'text-green-500' : 'text-red-500'}`}>
                 {stats.totalWinnings > 0 ? '+' : ''}{stats.totalWinnings}
               </div>
-              <div className="text-sm text-gray-600">Net Chips</div>
+              <div className="text-sm text-gray-400">Net Chips</div>
             </CardContent>
           </Card>
         </div>
 
         {/* History List */}
-        <Card>
+        <Card className="bg-gray-900 border-gray-800">
           <CardHeader>
-            <CardTitle>Recent Games</CardTitle>
+            <CardTitle className="text-white">Recent Games</CardTitle>
           </CardHeader>
           <CardContent>
             {history.length === 0 ? (
@@ -195,19 +195,19 @@ export default function GameHistory({ onBack }: GameHistoryProps) {
             ) : (
               <div className="space-y-4">
                 {history.map((game) => (
-                  <div key={game.id} className="border rounded-lg p-4 bg-gray-50">
+                  <div key={game.id} className="border border-gray-800 rounded-lg p-4 bg-gray-950">
                     <div className="flex justify-between items-start mb-2">
                       <div className="flex items-center gap-2">
                         <span className={`font-bold ${getResultColor(game.result)}`}>
                           {game.result.toUpperCase()} {getResultEmoji(game.result)}
                         </span>
-                        <span className="text-sm text-gray-500">
+                        <span className="text-sm text-gray-400">
                           {formatDate(game.created_at)}
                         </span>
                       </div>
                       <div className="text-right">
-                        <div className="font-medium">Bet: {game.bet_amount}</div>
-                        <div className={`text-sm ${game.chips_change >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                        <div className="font-medium text-white">Bet: {game.bet_amount}</div>
+                        <div className={`text-sm ${game.chips_change >= 0 ? 'text-green-500' : 'text-red-500'}`}>
                           {game.chips_change > 0 ? '+' : ''}{game.chips_change} chips
                         </div>
                       </div>
@@ -215,12 +215,12 @@ export default function GameHistory({ onBack }: GameHistoryProps) {
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                       <div>
-                        <div className="font-medium">Your Hand ({game.player_score})</div>
-                        <div className="text-gray-600">{formatHand(game.player_hand)}</div>
+                        <div className="font-medium text-white">Your Hand ({game.player_score})</div>
+                        <div className="text-gray-400">{formatHand(game.player_hand)}</div>
                       </div>
                       <div>
-                        <div className="font-medium">Dealer Hand ({game.dealer_score})</div>
-                        <div className="text-gray-600">{formatHand(game.dealer_hand)}</div>
+                        <div className="font-medium text-white">Dealer Hand ({game.dealer_score})</div>
+                        <div className="text-gray-400">{formatHand(game.dealer_hand)}</div>
                       </div>
                     </div>
                   </div>

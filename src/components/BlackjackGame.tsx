@@ -265,24 +265,20 @@ export default function BlackjackGame() {
   }
 
   return (
-    <div className="min-h-screen bg-green-800 p-4">
-      <div className="max-w-4xl mx-auto">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-white mb-2">Blackjack</h1>
-          <div className="text-white text-lg">
-            Chips: {gameState.chips}
-            {gameState.currentBet > 0 && (
-              <span className="ml-4">Current Bet: {gameState.currentBet}</span>
-            )}
+    <div className="min-h-screen bg-black p-4">
+      <div className="max-w-6xl mx-auto">
+        {/* Header with chips */}
+        <div className="flex justify-between items-center mb-12 px-4">
+          <h1 className="text-white text-2xl font-bold">Blackjack</h1>
+          <div className="flex items-center gap-2 bg-gray-900 px-4 py-2 rounded-lg border border-gray-700">
+            <span className="text-yellow-400">💰</span>
+            <span className="text-white font-semibold">{gameState.chips}</span>
           </div>
         </div>
 
         {/* Dealer Hand */}
-        <div className="mb-8">
-          <h2 className="text-white text-xl mb-4">
-            Dealer ({gameState.showDealerCard ? gameState.dealerScore : '?'})
-          </h2>
-          <div className="flex gap-2 justify-center flex-wrap">
+        <div className="mb-20 text-center">
+          <div className="flex gap-3 justify-center mb-4 min-h-[140px]">
             {gameState.dealerHand.map((card, index) => (
               <PlayingCard
                 key={index}
@@ -292,14 +288,17 @@ export default function BlackjackGame() {
               />
             ))}
           </div>
+          <div className="bg-gray-900 text-white px-4 py-2 rounded-lg inline-block border border-gray-700">
+            {gameState.showDealerCard ? gameState.dealerScore : '?'} Dealer
+          </div>
         </div>
 
         {/* Player Hand */}
-        <div className="mb-8">
-          <h2 className="text-white text-xl mb-4">
-            Your Hand ({gameState.playerScore})
-          </h2>
-          <div className="flex gap-2 justify-center flex-wrap">
+        <div className="mb-8 text-center">
+          <div className="bg-gray-900 text-white px-4 py-2 rounded-lg inline-block mb-4 border border-gray-700">
+            {gameState.playerScore} You
+          </div>
+          <div className="flex gap-3 justify-center min-h-[140px]">
             {gameState.playerHand.map((card, index) => (
               <PlayingCard
                 key={index}
@@ -311,43 +310,71 @@ export default function BlackjackGame() {
         </div>
 
         {/* Game Controls */}
-        <div className="text-center space-y-4">
+        <div className="text-center space-y-6 mt-12">
           {gameState.gameStatus === 'betting' && (
             <div className="space-y-4">
-              <div className="max-w-sm mx-auto">
+              <div className="max-w-md mx-auto space-y-4">
                 <Input
                   type="number"
-                  placeholder="Enter bet amount"
+                  placeholder="100"
                   value={betAmount}
                   onChange={(e) => setBetAmount(e.target.value)}
-                  className="text-center"
+                  className="text-center bg-gray-900 border-gray-700 text-white text-lg h-14"
                 />
+                <div className="flex gap-2 justify-center">
+                  <Button onClick={() => setBetAmount('5')} variant="outline" className="bg-gray-900 border-gray-700 text-white hover:bg-gray-800">
+                    +5
+                  </Button>
+                  <Button onClick={() => setBetAmount('25')} variant="outline" className="bg-gray-900 border-gray-700 text-white hover:bg-gray-800">
+                    +25
+                  </Button>
+                  <Button onClick={() => setBetAmount('100')} variant="outline" className="bg-gray-900 border-gray-700 text-white hover:bg-gray-800">
+                    +100
+                  </Button>
+                </div>
               </div>
-              <Button onClick={placeBet} size="lg">
-                Deal Cards
+              <Button onClick={placeBet} size="lg" className="bg-white text-black hover:bg-gray-200 px-8 py-6 text-lg">
+                Place Bet
               </Button>
             </div>
           )}
 
           {gameState.gameStatus === 'playing' && (
-            <div className="space-x-4">
-              <Button onClick={hit} disabled={!gameState.canHit} size="lg">
-                Hit
-              </Button>
-              <Button onClick={stand} disabled={!gameState.canStand} size="lg">
-                Stand
-              </Button>
+            <div className="space-y-4">
+              <div className="flex gap-4 justify-center">
+                <Button 
+                  onClick={hit} 
+                  disabled={!gameState.canHit} 
+                  size="lg"
+                  className="bg-red-600 hover:bg-red-700 text-white px-8 py-6 text-lg"
+                >
+                  Hit
+                </Button>
+                <Button 
+                  onClick={stand} 
+                  disabled={!gameState.canStand} 
+                  size="lg"
+                  className="bg-gray-700 hover:bg-gray-600 text-white px-8 py-6 text-lg"
+                >
+                  Stand
+                </Button>
+              </div>
               <Dialog>
                 <DialogTrigger asChild>
-                  <Button variant="outline" onClick={getAIAdvice} disabled={loadingAdvice}>
+                  <Button 
+                    variant="outline" 
+                    onClick={getAIAdvice} 
+                    disabled={loadingAdvice}
+                    className="bg-purple-600 hover:bg-purple-700 text-white border-purple-600"
+                  >
                     {loadingAdvice ? 'Getting Advice...' : 'Get AI Advice'}
                   </Button>
                 </DialogTrigger>
-                <DialogContent>
+                <DialogContent className="bg-gray-900 text-white border-gray-700">
                   <DialogHeader>
-                    <DialogTitle>AI Blackjack Advisor</DialogTitle>
+                    <DialogTitle className="text-white">AI Blackjack Advisor</DialogTitle>
                   </DialogHeader>
-                  <div className="whitespace-pre-wrap">
+                  <div className="whitespace-pre-wrap text-gray-300">
                     {aiAdvice || 'Click "Get AI Advice" to receive strategic guidance for your current hand.'}
                   </div>
                 </DialogContent>
@@ -368,13 +395,13 @@ export default function BlackjackGame() {
                 {gameState.result === 'lose' && 'You Lose 😞'}
                 {gameState.result === 'push' && 'Push! 🤝'}
               </div>
-              <div className="space-x-4">
-                <Button onClick={newGame} size="lg">
+              <div className="flex gap-4 justify-center">
+                <Button onClick={newGame} size="lg" className="bg-white text-black hover:bg-gray-200 px-8 py-6 text-lg">
                   New Game
                 </Button>
                 {gameState.chips < 10 && (
-                  <Button onClick={buyChips} variant="outline" size="lg">
-                    Buy 100 Chips ($1)
+                  <Button onClick={buyChips} variant="outline" size="lg" className="bg-gray-900 border-gray-700 text-white hover:bg-gray-800">
+                    Buy 100 Chips
                   </Button>
                 )}
               </div>

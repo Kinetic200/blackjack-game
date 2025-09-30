@@ -17,24 +17,24 @@ export default function Navigation({ currentView, onViewChange }: NavigationProp
   }
 
   return (
-    <nav className="bg-green-900 border-b border-green-700 p-4">
-      <div className="max-w-4xl mx-auto flex justify-between items-center">
-        <div className="flex items-center gap-4">
-          <h1 className="text-white text-xl font-bold">🃏 Blackjack</h1>
+    <nav className="bg-black border-b border-gray-800 p-4">
+      <div className="max-w-6xl mx-auto flex justify-between items-center">
+        <div className="flex items-center gap-6">
+          <h1 className="text-white text-xl font-bold">Blackjack</h1>
           <div className="flex gap-2">
             <Button
               variant={currentView === 'game' ? 'default' : 'ghost'}
               size="sm"
               onClick={() => onViewChange('game')}
-              className="text-white"
+              className={currentView === 'game' ? 'bg-white text-black hover:bg-gray-200' : 'text-gray-400 hover:text-white hover:bg-gray-900'}
             >
-              Game
+              Home
             </Button>
             <Button
               variant={currentView === 'history' ? 'default' : 'ghost'}
               size="sm"
               onClick={() => onViewChange('history')}
-              className="text-white"
+              className={currentView === 'history' ? 'bg-white text-black hover:bg-gray-200' : 'text-gray-400 hover:text-white hover:bg-gray-900'}
             >
               <History className="w-4 h-4 mr-2" />
               History
@@ -42,21 +42,18 @@ export default function Navigation({ currentView, onViewChange }: NavigationProp
           </div>
         </div>
 
-        <div className="flex items-center gap-4 text-white">
-          <div className="flex items-center gap-2">
+        <div className="flex items-center gap-4 text-gray-400">
+          <div className="flex items-center gap-2 text-sm">
             <User className="w-4 h-4" />
-            <span className="text-sm">{gameUser?.email}</span>
-          </div>
-          <div className="text-sm">
-            💰 {gameUser?.chips || 0} chips
+            <span>{gameUser?.email}</span>
           </div>
           <Button
             variant="ghost"
             size="sm"
             onClick={handleSignOut}
-            className="text-white hover:text-red-300"
+            className="text-gray-400 hover:text-white hover:bg-gray-900"
           >
-            <LogOut className="w-4 h-4" />
+            Logout
           </Button>
         </div>
       </div>
