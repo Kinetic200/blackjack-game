@@ -113,7 +113,7 @@ export async function POST(request: NextRequest) {
         `,
       })
 
-      console.log('✅ Email sent successfully via Resend:', emailResponse.id)
+      console.log('✅ Email sent successfully via Resend:', emailResponse.data?.id || 'success')
 
       return NextResponse.json({ success: true, message: 'Verification code sent to your email!' })
     } catch (emailError) {
