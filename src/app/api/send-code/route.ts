@@ -132,11 +132,12 @@ export async function POST(request: NextRequest) {
 
       return NextResponse.json({ success: true, message: 'Verification code sent to your email!' })
     } catch (emailError) {
+      const error = emailError as Error
       console.error('❌ Email sending failed with exception:', emailError)
-      console.error('   Error details:', (emailError as Error).message || emailError)
-      console.error('   Stack:', (emailError as Error).stack)
+      console.error('   Error details:', error.message || emailError)
+      console.error('   Stack:', error.stack)
       return NextResponse.json(
-        { error: `Failed to send email: ${emailError.message || 'Please try again'}` },
+        { error: `Failed to send email: ${error.message || 'Please try again'}` },
         { status: 500 }
       )
     }
