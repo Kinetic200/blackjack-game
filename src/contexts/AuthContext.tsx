@@ -53,7 +53,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const fetchGameUser = async (userId: string) => {
     try {
-        const { data: userData, error: fetchError } = await supabase
+      console.log('📊 Fetching user data from database for ID:', userId)
+      const { data: userData, error: fetchError } = await supabase
         .from('users')
         .select('*')
         .eq('id', userId)
@@ -61,6 +62,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       if (fetchError && fetchError.code === 'PGRST116') {
         // User doesn't exist, create new user with 500 chips
+        console.log('🆕 User not found in DB, creating new user with 500 chips')
         const { data: newUser, error: createError } = await supabase
           .from('users')
           .insert([
@@ -74,34 +76,38 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           .single()
 
         if (createError) {
-          console.error('Error creating user:', createError)
+          console.error('❌ Error creating user:', createError)
           setLoading(false)
           return
         }
 
+        console.log('✅ New user created successfully!')
         setGameUser({
           id: newUser.id,
           email: newUser.email,
           chips: newUser.chips
         })
       } else if (fetchError) {
-        console.error('Error fetching user:', fetchError)
+        console.error('❌ Error fetching user:', fetchError)
         setLoading(false)
         return
       }
 
       if (userData) {
+        console.log('✅ User data loaded, chips:', userData.chips)
         setGameUser({
           id: userData.id,
           email: userData.email,
           chips: userData.chips
         })
       } else {
+        console.log('⚠️ No user data, setting loading to false')
         setLoading(false)
       }
     } catch (error) {
-      console.error('Error in fetchGameUser:', error)
+      console.error('❌ Error in fetchGameUser:', error)
     } finally {
+      console.log('🏁 fetchGameUser complete, setting loading to false')
       setLoading(false)
     }
   }
