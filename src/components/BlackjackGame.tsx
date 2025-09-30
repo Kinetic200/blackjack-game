@@ -18,6 +18,7 @@ import { Input } from '@/components/ui/input'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { toast } from 'sonner'
 import PlayingCard from './PlayingCard'
+import PlaceholderCard from './PlaceholderCard'
 
 export default function BlackjackGame() {
   const { gameUser, updateChips } = useAuth()
@@ -235,6 +236,7 @@ export default function BlackjackGame() {
   const getAIAdvice = async () => {
     if (gameState.gameStatus !== 'playing' || !gameState.dealerHand.length) return
     
+    setAiAdvice('') // Clear previous advice
     setLoadingAdvice(true)
     try {
       // Call API route instead of calling Gemini directly (keeps API key secure)
@@ -279,14 +281,22 @@ export default function BlackjackGame() {
         {/* Dealer Hand */}
         <div className="mb-20 text-center">
           <div className="flex gap-3 justify-center mb-4 min-h-[140px]">
-            {gameState.dealerHand.map((card, index) => (
-              <PlayingCard
-                key={index}
-                card={card}
-                faceDown={index === 1 && !gameState.showDealerCard}
-                delay={index * 200}
-              />
-            ))}
+            {gameState.dealerHand.length > 0 ? (
+              gameState.dealerHand.map((card, index) => (
+                <PlayingCard
+                  key={index}
+                  card={card}
+                  faceDown={index === 1 && !gameState.showDealerCard}
+                  delay={index * 200}
+                />
+              ))
+            ) : (
+              // Show placeholder cards when no cards dealt
+              <>
+                <PlaceholderCard />
+                <PlaceholderCard />
+              </>
+            )}
           </div>
           <div className="bg-gray-900 text-white px-4 py-2 rounded-lg inline-block border border-gray-700">
             {gameState.showDealerCard ? gameState.dealerScore : '?'} Dealer
@@ -299,13 +309,21 @@ export default function BlackjackGame() {
             {gameState.playerScore} You
           </div>
           <div className="flex gap-3 justify-center min-h-[140px]">
-            {gameState.playerHand.map((card, index) => (
-              <PlayingCard
-                key={index}
-                card={card}
-                delay={index * 200}
-              />
-            ))}
+            {gameState.playerHand.length > 0 ? (
+              gameState.playerHand.map((card, index) => (
+                <PlayingCard
+                  key={index}
+                  card={card}
+                  delay={index * 200}
+                />
+              ))
+            ) : (
+              // Show placeholder cards when no cards dealt
+              <>
+                <PlaceholderCard />
+                <PlaceholderCard />
+              </>
+            )}
           </div>
         </div>
 
@@ -375,7 +393,14 @@ export default function BlackjackGame() {
                     <DialogTitle className="text-white">AI Blackjack Advisor</DialogTitle>
                   </DialogHeader>
                   <div className="whitespace-pre-wrap text-gray-300">
-                    {aiAdvice || 'Click "Get AI Advice" to receive strategic guidance for your current hand.'}
+                    {loadingAdvice ? (
+                      <div className="flex items-center gap-2">
+                        <div className="animate-spin h-4 w-4 border-2 border-purple-500 border-t-transparent rounded-full"></div>
+                        <span>Loading AI advice...</span>
+                      </div>
+                    ) : (
+                      aiAdvice || 'Click "Get AI Advice" to receive strategic guidance for your current hand.'
+                    )}
                   </div>
                 </DialogContent>
               </Dialog>
