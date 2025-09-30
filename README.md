@@ -2,9 +2,8 @@
 
 A full-stack blackjack game built with Next.js, featuring AI assistance, user authentication, and game history tracking.
 
-**Developer:** [Your Name]
-**Email:** [Your Email]
-**Deployed Project:** [Your Vercel URL]
+**Developer:** Kinetic200
+**Deployed Project:** _not yet deployed_
 
 ## 🎮 Features
 
@@ -239,11 +238,11 @@ src/
 
 ## 📄 License
 
-This project is built for educational purposes as part of a coding challenge.
+This project is built for the MAC projects AC as part of a coding challenge.
 
 ## 🤝 Contributing
 
-This is a take-home project, but feedback and suggestions are welcome!
+This is a take home project, but feedback and suggestions are welcome!
 
 ---
 
