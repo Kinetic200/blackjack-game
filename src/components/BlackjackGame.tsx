@@ -272,9 +272,18 @@ export default function BlackjackGame() {
         {/* Header with chips */}
         <div className="flex justify-between items-center mb-4 sm:mb-8 px-2 sm:px-4">
           <h1 className="text-white text-xl sm:text-2xl font-bold">Blackjack</h1>
-          <div className="flex items-center gap-2 bg-gray-900 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg border border-gray-700">
-            <span className="text-yellow-400 text-sm sm:text-base">💰</span>
-            <span className="text-white font-semibold text-sm sm:text-base">{gameState.chips}</span>
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 bg-gray-900 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg border border-gray-700">
+              <span className="text-yellow-400 text-sm sm:text-base">💰</span>
+              <span className="text-white font-semibold text-sm sm:text-base">{gameState.chips}</span>
+            </div>
+            <Button 
+              onClick={buyChips}
+              size="sm"
+              className="bg-gray-900 hover:bg-gray-800 text-white border border-gray-700 w-8 h-8 p-0 rounded-lg"
+            >
+              +
+            </Button>
           </div>
         </div>
 
@@ -452,12 +461,12 @@ export default function BlackjackGame() {
                 {gameState.result === 'push' && 'Push! 🤝'}
               </div>
               <div className="flex gap-3 sm:gap-4 justify-center flex-wrap">
-                <Button onClick={newGame} size="lg" className="bg-white text-black hover:bg-gray-200 px-6 sm:px-8 py-4 sm:py-6 text-base sm:text-lg">
+                <Button onClick={newGame} size="lg" className="bg-white text-black hover:bg-gray-200 w-40 sm:w-48 py-4 sm:py-6 text-base sm:text-lg font-bold">
                   New Game
                 </Button>
                 {gameState.chips < 10 && (
-                  <Button onClick={buyChips} variant="outline" size="lg" className="bg-gray-900 border-gray-700 text-white hover:bg-gray-800 text-sm sm:text-base">
-                    Buy 100 Chips
+                  <Button onClick={buyChips} variant="outline" size="lg" className="bg-gray-900 border-gray-700 text-white hover:bg-gray-800 w-40 sm:w-48 py-4 sm:py-6 text-base sm:text-lg font-bold">
+                    Buy Chips
                   </Button>
                 )}
               </div>
