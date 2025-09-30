@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { Resend } from 'resend'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+const resend = new Resend(process.env.RESEND_API_KEY || 'placeholder-key')
 
 // Store verification codes temporarily (in production, use Redis or database)
 const verificationCodes = new Map<string, { code: string; expires: number }>()
@@ -30,6 +30,12 @@ export async function POST(request: NextRequest) {
 
     // Send email via Resend
     try {
+      if (!process.env.RESEND_API_KEY || process.env.RESEND_API_KEY === 'placeholder-key') {
+        console.log('DEMO MODE: Verification code:', code)
+        // In demo mode, just return success (user can check server logs for code)
+        return NextResponse.json({ success: true, message: 'Verification code sent! (Demo: check console)', demoCode: code })
+      }
+
       await resend.emails.send({
         from: 'Blackjack Game <onboarding@resend.dev>', // Change to your verified domain
         to: email,
