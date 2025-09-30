@@ -388,11 +388,11 @@ export default function BlackjackGame() {
                     {loadingAdvice ? 'Getting Advice...' : 'Get AI Advice'}
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="bg-gray-900 text-white border-gray-700">
-                  <DialogHeader>
+                <DialogContent className="bg-gray-900 text-white border-gray-700 max-h-[85vh] flex flex-col">
+                  <DialogHeader className="flex-shrink-0">
                     <DialogTitle className="text-white">AI Blackjack Advisor</DialogTitle>
                   </DialogHeader>
-                  <div className="whitespace-pre-wrap text-gray-300">
+                  <div className="whitespace-pre-wrap text-gray-300 overflow-y-auto max-h-[60vh] pr-2">
                     {loadingAdvice ? (
                       <div className="flex items-center gap-2">
                         <div className="animate-spin h-4 w-4 border-2 border-purple-500 border-t-transparent rounded-full"></div>
