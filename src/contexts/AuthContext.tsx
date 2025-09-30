@@ -36,9 +36,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Listen for auth changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (_event, session) => {
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('🔐 Auth state changed:', event, 'User:', session?.user?.email)
       setUser(session?.user ?? null)
       if (session?.user) {
+        console.log('👤 Fetching game user for:', session.user.id)
         await fetchGameUser(session.user.id)
       } else {
         setGameUser(null)

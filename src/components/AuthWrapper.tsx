@@ -13,7 +13,7 @@ export default function AuthWrapper() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-green-800 flex items-center justify-center">
+      <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="text-white text-xl">Loading...</div>
       </div>
     )
@@ -24,7 +24,7 @@ export default function AuthWrapper() {
   }
 
   return (
-    <div className="min-h-screen bg-green-800">
+    <div className="min-h-screen bg-black">
       <Navigation currentView={currentView} onViewChange={setCurrentView} />
       
       {currentView === 'game' ? (
