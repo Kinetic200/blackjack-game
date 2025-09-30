@@ -19,7 +19,7 @@ export async function getBlackjackAdvice(
       throw new Error('Gemini API key not configured')
     }
     
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash-latest' })
+    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-pro' })
 
     const playerScore = calculateHandValue(playerHand)
     const dealerValue = dealerUpCard.rank === 'A' ? 11 : dealerUpCard.value
@@ -39,7 +39,7 @@ Please provide:
 
 Keep your response concise and helpful for a player learning blackjack strategy.`
 
-    console.log('Calling Gemini API with model: gemini-1.5-flash-latest')
+    console.log('Calling Gemini API with model: gemini-1.5-pro')
     const result = await model.generateContent(prompt)
     const response = await result.response
     const text = response.text()
