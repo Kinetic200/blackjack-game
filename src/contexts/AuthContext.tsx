@@ -41,7 +41,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(session?.user ?? null)
       if (session?.user) {
         console.log('👤 Fetching game user for:', session.user.id)
-        await fetchGameUser(session.user.id)
+        await fetchGameUser(session.user.id, session.user.email || '')
       } else {
         setGameUser(null)
         setLoading(false)
@@ -51,9 +51,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => subscription.unsubscribe()
   }, []) // fetchGameUser is stable, no need to include
 
-  const fetchGameUser = async (userId: string) => {
+  const fetchGameUser = async (userId: string, userEmail: string) => {
     try {
       console.log('📊 Fetching user data from database for ID:', userId)
+      console.log('   Email:', userEmail)
       const { data: userData, error: fetchError } = await supabase
         .from('users')
         .select('*')
@@ -63,12 +64,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (fetchError && fetchError.code === 'PGRST116') {
         // User doesn't exist, create new user with 500 chips
         console.log('🆕 User not found in DB, creating new user with 500 chips')
+        console.log('   Will create with email:', userEmail)
         const { data: newUser, error: createError } = await supabase
           .from('users')
           .insert([
             {
               id: userId,
-              email: user?.email || '',
+              email: userEmail,
               chips: 500
             }
           ])
