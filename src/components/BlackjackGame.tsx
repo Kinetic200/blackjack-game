@@ -334,24 +334,55 @@ export default function BlackjackGame() {
               <div className="max-w-md mx-auto space-y-2 sm:space-y-4 px-4">
                 <Input
                   type="number"
-                  placeholder="100"
+                  placeholder="Enter bet amount"
                   value={betAmount}
                   onChange={(e) => setBetAmount(e.target.value)}
-                  className="text-center bg-gray-900 border-gray-700 text-white text-base sm:text-lg h-10 sm:h-14"
+                  className="text-center bg-gray-900 border-gray-700 text-white text-base sm:text-lg h-12 sm:h-14 font-bold"
                 />
-                <div className="flex gap-2 justify-center">
-                  <Button onClick={() => setBetAmount('5')} variant="outline" className="bg-gray-900 border-gray-700 text-white hover:bg-gray-800 text-sm sm:text-base px-3 sm:px-4">
+                <div className="flex gap-2 justify-center flex-wrap">
+                  <Button 
+                    onClick={() => {
+                      const current = parseInt(betAmount) || 0
+                      const newAmount = Math.min(current + 5, gameState.chips)
+                      setBetAmount(newAmount.toString())
+                    }} 
+                    variant="outline" 
+                    className="bg-yellow-600 border-yellow-700 text-white hover:bg-yellow-700 text-sm sm:text-base px-4 sm:px-5 py-2 font-semibold"
+                  >
                     +5
                   </Button>
-                  <Button onClick={() => setBetAmount('25')} variant="outline" className="bg-gray-900 border-gray-700 text-white hover:bg-gray-800 text-sm sm:text-base px-3 sm:px-4">
+                  <Button 
+                    onClick={() => {
+                      const current = parseInt(betAmount) || 0
+                      const newAmount = Math.min(current + 25, gameState.chips)
+                      setBetAmount(newAmount.toString())
+                    }} 
+                    variant="outline" 
+                    className="bg-yellow-600 border-yellow-700 text-white hover:bg-yellow-700 text-sm sm:text-base px-4 sm:px-5 py-2 font-semibold"
+                  >
                     +25
                   </Button>
-                  <Button onClick={() => setBetAmount('100')} variant="outline" className="bg-gray-900 border-gray-700 text-white hover:bg-gray-800 text-sm sm:text-base px-3 sm:px-4">
+                  <Button 
+                    onClick={() => {
+                      const current = parseInt(betAmount) || 0
+                      const newAmount = Math.min(current + 100, gameState.chips)
+                      setBetAmount(newAmount.toString())
+                    }} 
+                    variant="outline" 
+                    className="bg-yellow-600 border-yellow-700 text-white hover:bg-yellow-700 text-sm sm:text-base px-4 sm:px-5 py-2 font-semibold"
+                  >
                     +100
+                  </Button>
+                  <Button 
+                    onClick={() => setBetAmount('0')} 
+                    variant="outline" 
+                    className="bg-gray-700 border-gray-600 text-white hover:bg-gray-600 text-sm sm:text-base px-4 sm:px-5 py-2 font-semibold"
+                  >
+                    Clear
                   </Button>
                 </div>
               </div>
-              <Button onClick={placeBet} size="lg" className="bg-white text-black hover:bg-gray-200 px-6 sm:px-8 py-4 sm:py-6 text-base sm:text-lg">
+              <Button onClick={placeBet} size="lg" className="bg-green-600 hover:bg-green-700 text-white px-8 sm:px-10 py-5 sm:py-7 text-lg sm:text-xl font-bold shadow-lg">
                 Place Bet
               </Button>
             </div>
