@@ -37,7 +37,7 @@ export default function PlayingCard({ card, faceDown = false, delay = 0 }: Playi
   return (
     <div 
       className={`
-        w-16 h-24 sm:w-20 sm:h-28 bg-white rounded-lg border-2 border-gray-300 
+        w-14 h-20 sm:w-20 sm:h-28 bg-white rounded-lg border-2 border-gray-300 
         flex flex-col justify-between p-1 sm:p-2 shadow-lg
         transition-all duration-500 transform
         ${isVisible ? 'scale-100 opacity-100' : 'scale-0 opacity-0'}

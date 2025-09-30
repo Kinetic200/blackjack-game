@@ -267,20 +267,20 @@ export default function BlackjackGame() {
   }
 
   return (
-    <div className="min-h-screen bg-black p-4">
+    <div className="min-h-screen bg-black p-2 sm:p-4 pb-20">
       <div className="max-w-6xl mx-auto">
         {/* Header with chips */}
-        <div className="flex justify-between items-center mb-12 px-4">
-          <h1 className="text-white text-2xl font-bold">Blackjack</h1>
-          <div className="flex items-center gap-2 bg-gray-900 px-4 py-2 rounded-lg border border-gray-700">
-            <span className="text-yellow-400">💰</span>
-            <span className="text-white font-semibold">{gameState.chips}</span>
+        <div className="flex justify-between items-center mb-4 sm:mb-8 px-2 sm:px-4">
+          <h1 className="text-white text-xl sm:text-2xl font-bold">Blackjack</h1>
+          <div className="flex items-center gap-2 bg-gray-900 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg border border-gray-700">
+            <span className="text-yellow-400 text-sm sm:text-base">💰</span>
+            <span className="text-white font-semibold text-sm sm:text-base">{gameState.chips}</span>
           </div>
         </div>
 
         {/* Dealer Hand */}
-        <div className="mb-20 text-center">
-          <div className="flex gap-3 justify-center mb-4 min-h-[140px]">
+        <div className="mb-8 sm:mb-16 text-center">
+          <div className="flex gap-2 sm:gap-3 justify-center mb-2 sm:mb-4 min-h-[80px] sm:min-h-[140px]">
             {gameState.dealerHand.length > 0 ? (
               gameState.dealerHand.map((card, index) => (
                 <PlayingCard
@@ -298,17 +298,17 @@ export default function BlackjackGame() {
               </>
             )}
           </div>
-          <div className="bg-gray-900 text-white px-4 py-2 rounded-lg inline-block border border-gray-700">
+          <div className="bg-gray-900 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg inline-block border border-gray-700 text-sm sm:text-base">
             {gameState.showDealerCard ? gameState.dealerScore : '?'} Dealer
           </div>
         </div>
 
         {/* Player Hand */}
-        <div className="mb-8 text-center">
-          <div className="bg-gray-900 text-white px-4 py-2 rounded-lg inline-block mb-4 border border-gray-700">
+        <div className="mb-6 sm:mb-8 text-center">
+          <div className="bg-gray-900 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg inline-block mb-2 sm:mb-4 border border-gray-700 text-sm sm:text-base">
             {gameState.playerScore} You
           </div>
-          <div className="flex gap-3 justify-center min-h-[140px]">
+          <div className="flex gap-2 sm:gap-3 justify-center min-h-[80px] sm:min-h-[140px]">
             {gameState.playerHand.length > 0 ? (
               gameState.playerHand.map((card, index) => (
                 <PlayingCard
@@ -328,43 +328,43 @@ export default function BlackjackGame() {
         </div>
 
         {/* Game Controls */}
-        <div className="text-center space-y-6 mt-12">
+        <div className="text-center space-y-3 sm:space-y-6 mt-4 sm:mt-8">
           {gameState.gameStatus === 'betting' && (
-            <div className="space-y-4">
-              <div className="max-w-md mx-auto space-y-4">
+            <div className="space-y-3 sm:space-y-4">
+              <div className="max-w-md mx-auto space-y-2 sm:space-y-4 px-4">
                 <Input
                   type="number"
                   placeholder="100"
                   value={betAmount}
                   onChange={(e) => setBetAmount(e.target.value)}
-                  className="text-center bg-gray-900 border-gray-700 text-white text-lg h-14"
+                  className="text-center bg-gray-900 border-gray-700 text-white text-base sm:text-lg h-10 sm:h-14"
                 />
                 <div className="flex gap-2 justify-center">
-                  <Button onClick={() => setBetAmount('5')} variant="outline" className="bg-gray-900 border-gray-700 text-white hover:bg-gray-800">
+                  <Button onClick={() => setBetAmount('5')} variant="outline" className="bg-gray-900 border-gray-700 text-white hover:bg-gray-800 text-sm sm:text-base px-3 sm:px-4">
                     +5
                   </Button>
-                  <Button onClick={() => setBetAmount('25')} variant="outline" className="bg-gray-900 border-gray-700 text-white hover:bg-gray-800">
+                  <Button onClick={() => setBetAmount('25')} variant="outline" className="bg-gray-900 border-gray-700 text-white hover:bg-gray-800 text-sm sm:text-base px-3 sm:px-4">
                     +25
                   </Button>
-                  <Button onClick={() => setBetAmount('100')} variant="outline" className="bg-gray-900 border-gray-700 text-white hover:bg-gray-800">
+                  <Button onClick={() => setBetAmount('100')} variant="outline" className="bg-gray-900 border-gray-700 text-white hover:bg-gray-800 text-sm sm:text-base px-3 sm:px-4">
                     +100
                   </Button>
                 </div>
               </div>
-              <Button onClick={placeBet} size="lg" className="bg-white text-black hover:bg-gray-200 px-8 py-6 text-lg">
+              <Button onClick={placeBet} size="lg" className="bg-white text-black hover:bg-gray-200 px-6 sm:px-8 py-4 sm:py-6 text-base sm:text-lg">
                 Place Bet
               </Button>
             </div>
           )}
 
           {gameState.gameStatus === 'playing' && (
-            <div className="space-y-4">
-              <div className="flex gap-4 justify-center">
+            <div className="space-y-3 sm:space-y-4">
+              <div className="flex gap-3 sm:gap-4 justify-center">
                 <Button 
                   onClick={hit} 
                   disabled={!gameState.canHit} 
                   size="lg"
-                  className="bg-red-600 hover:bg-red-700 text-white px-8 py-6 text-lg"
+                  className="bg-red-600 hover:bg-red-700 text-white px-6 sm:px-8 py-4 sm:py-6 text-base sm:text-lg"
                 >
                   Hit
                 </Button>
@@ -372,7 +372,7 @@ export default function BlackjackGame() {
                   onClick={stand} 
                   disabled={!gameState.canStand} 
                   size="lg"
-                  className="bg-gray-700 hover:bg-gray-600 text-white px-8 py-6 text-lg"
+                  className="bg-gray-700 hover:bg-gray-600 text-white px-6 sm:px-8 py-4 sm:py-6 text-base sm:text-lg"
                 >
                   Stand
                 </Button>
@@ -383,7 +383,7 @@ export default function BlackjackGame() {
                     variant="outline" 
                     onClick={getAIAdvice} 
                     disabled={loadingAdvice}
-                    className="bg-purple-600 hover:bg-purple-700 text-white border-purple-600"
+                    className="bg-purple-600 hover:bg-purple-700 text-white border-purple-600 text-sm sm:text-base px-4 sm:px-6"
                   >
                     {loadingAdvice ? 'Getting Advice...' : 'Get AI Advice'}
                   </Button>
@@ -414,18 +414,18 @@ export default function BlackjackGame() {
           )}
 
           {gameState.gameStatus === 'finished' && (
-            <div className="space-y-4">
-              <div className="text-white text-2xl font-bold">
+            <div className="space-y-3 sm:space-y-4">
+              <div className="text-white text-xl sm:text-2xl font-bold">
                 {gameState.result === 'win' && 'You Win! 🎉'}
                 {gameState.result === 'lose' && 'You Lose 😞'}
                 {gameState.result === 'push' && 'Push! 🤝'}
               </div>
-              <div className="flex gap-4 justify-center">
-                <Button onClick={newGame} size="lg" className="bg-white text-black hover:bg-gray-200 px-8 py-6 text-lg">
+              <div className="flex gap-3 sm:gap-4 justify-center flex-wrap">
+                <Button onClick={newGame} size="lg" className="bg-white text-black hover:bg-gray-200 px-6 sm:px-8 py-4 sm:py-6 text-base sm:text-lg">
                   New Game
                 </Button>
                 {gameState.chips < 10 && (
-                  <Button onClick={buyChips} variant="outline" size="lg" className="bg-gray-900 border-gray-700 text-white hover:bg-gray-800">
+                  <Button onClick={buyChips} variant="outline" size="lg" className="bg-gray-900 border-gray-700 text-white hover:bg-gray-800 text-sm sm:text-base">
                     Buy 100 Chips
                   </Button>
                 )}
