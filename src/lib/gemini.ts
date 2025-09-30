@@ -11,7 +11,12 @@ export async function getBlackjackAdvice(
   chips: number
 ): Promise<string> {
   try {
-    const model = genAI.getGenerativeModel({ model: 'gemini-pro' })
+    // Check if API key is available
+    if (!process.env.GEMINI_API_KEY || process.env.GEMINI_API_KEY === 'placeholder-key') {
+      throw new Error('Gemini API key not configured')
+    }
+    
+    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' })
 
     const playerScore = calculateHandValue(playerHand)
     const dealerValue = dealerUpCard.rank === 'A' ? 11 : dealerUpCard.value
