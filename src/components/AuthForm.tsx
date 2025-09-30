@@ -31,16 +31,29 @@ export default function AuthForm() {
     setLoading(true)
 
     try {
-      const { error } = isLogin 
-        ? await signIn(email, password)
-        : await signUp(email, password)
-
-      if (error) {
-        toast.error(error.message)
+      if (isLogin) {
+        console.log('🔐 Attempting to sign in...')
+        const { error } = await signIn(email, password)
+        if (error) {
+          console.error('❌ Sign in error:', error)
+          toast.error(error.message)
+        } else {
+          console.log('✅ Sign in successful!')
+          toast.success('Welcome back!')
+        }
       } else {
-        toast.success(isLogin ? 'Welcome back!' : 'Account created successfully!')
+        console.log('📝 Attempting to sign up...')
+        const { error } = await signUp(email, password)
+        if (error) {
+          console.error('❌ Sign up error:', error)
+          toast.error(error.message)
+        } else {
+          console.log('✅ Sign up successful!')
+          toast.success('Account created! You can now play.')
+        }
       }
-    } catch {
+    } catch (error) {
+      console.error('❌ Unexpected error:', error)
       toast.error('An unexpected error occurred')
     } finally {
       setLoading(false)
