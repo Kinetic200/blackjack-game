@@ -31,32 +31,91 @@ export async function POST(request: NextRequest) {
     // Send email via Resend
     try {
       if (!process.env.RESEND_API_KEY || process.env.RESEND_API_KEY === 'placeholder-key') {
-        console.log('DEMO MODE: Verification code:', code)
-        // In demo mode, just return success (user can check server logs for code)
-        return NextResponse.json({ success: true, message: 'Verification code sent! (Demo: check console)', demoCode: code })
+        console.log('⚠️ DEMO MODE: Verification code:', code, 'for email:', email)
+        return NextResponse.json({ 
+          success: true, 
+          message: 'Code sent! (Demo mode - check console)', 
+          demoCode: code 
+        })
       }
 
-      await resend.emails.send({
-        from: 'Blackjack Game <onboarding@resend.dev>', // Change to your verified domain
+      const emailResponse = await resend.emails.send({
+        from: 'Blackjack <onboarding@resend.dev>',
         to: email,
-        subject: 'Your Blackjack Verification Code',
+        subject: 'Your Blackjack Game Verification Code',
         html: `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #000; color: #fff;">
-            <h1 style="text-align: center; color: #fff;">🃏 Blackjack</h1>
-            <div style="background-color: #1a1a1a; border: 1px solid #333; border-radius: 10px; padding: 30px; margin: 20px 0;">
-              <h2 style="color: #fff; margin-top: 0;">Your Verification Code</h2>
-              <p style="color: #aaa; font-size: 16px;">Enter this code to verify your email:</p>
-              <div style="background-color: #000; border: 2px solid #444; border-radius: 8px; padding: 20px; text-align: center; margin: 20px 0;">
-                <span style="font-size: 36px; font-weight: bold; letter-spacing: 8px; color: #fff;">${code}</span>
-              </div>
-              <p style="color: #aaa; font-size: 14px;">This code will expire in 10 minutes.</p>
-              <p style="color: #666; font-size: 12px; margin-top: 30px;">If you didn't request this code, please ignore this email.</p>
-            </div>
-          </div>
+          <!DOCTYPE html>
+          <html>
+            <head>
+              <meta charset="utf-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            </head>
+            <body style="margin: 0; padding: 0; background-color: #000000; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+              <table role="presentation" style="width: 100%; border-collapse: collapse;">
+                <tr>
+                  <td align="center" style="padding: 40px 20px;">
+                    <table role="presentation" style="max-width: 600px; width: 100%; background-color: #000000;">
+                      <!-- Header -->
+                      <tr>
+                        <td style="text-align: center; padding: 20px 0;">
+                          <h1 style="color: #ffffff; font-size: 32px; margin: 0; font-weight: bold;">🃏 Blackjack</h1>
+                        </td>
+                      </tr>
+                      
+                      <!-- Content Card -->
+                      <tr>
+                        <td style="padding: 0 20px;">
+                          <table role="presentation" style="width: 100%; background-color: #1a1a1a; border: 1px solid #333333; border-radius: 12px;">
+                            <tr>
+                              <td style="padding: 40px 30px;">
+                                <h2 style="color: #ffffff; font-size: 24px; margin: 0 0 16px 0; font-weight: 600;">Your Verification Code</h2>
+                                <p style="color: #aaaaaa; font-size: 16px; line-height: 24px; margin: 0 0 24px 0;">
+                                  Welcome to Blackjack! Enter this code to verify your email address and start playing:
+                                </p>
+                                
+                                <!-- Code Box -->
+                                <table role="presentation" style="width: 100%;">
+                                  <tr>
+                                    <td align="center" style="padding: 20px 0;">
+                                      <div style="background-color: #000000; border: 2px solid #444444; border-radius: 8px; padding: 24px; display: inline-block;">
+                                        <span style="font-size: 42px; font-weight: bold; letter-spacing: 10px; color: #ffffff; font-family: 'Courier New', monospace;">${code}</span>
+                                      </div>
+                                    </td>
+                                  </tr>
+                                </table>
+                                
+                                <p style="color: #aaaaaa; font-size: 14px; line-height: 20px; margin: 24px 0 0 0;">
+                                  ⏰ This code will expire in <strong style="color: #ffffff;">10 minutes</strong>.
+                                </p>
+                                <p style="color: #666666; font-size: 12px; line-height: 18px; margin: 30px 0 0 0; padding-top: 20px; border-top: 1px solid #333333;">
+                                  If you didn't request this code, please ignore this email. Your account is secure.
+                                </p>
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                      </tr>
+                      
+                      <!-- Footer -->
+                      <tr>
+                        <td style="text-align: center; padding: 30px 20px;">
+                          <p style="color: #666666; font-size: 12px; margin: 0;">
+                            © ${new Date().getFullYear()} Blackjack Game. All rights reserved.
+                          </p>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+            </body>
+          </html>
         `,
       })
 
-      return NextResponse.json({ success: true, message: 'Verification code sent!' })
+      console.log('✅ Email sent successfully via Resend:', emailResponse.id)
+
+      return NextResponse.json({ success: true, message: 'Verification code sent to your email!' })
     } catch (emailError) {
       console.error('Email sending failed:', emailError)
       return NextResponse.json(
