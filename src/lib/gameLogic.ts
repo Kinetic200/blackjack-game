@@ -70,37 +70,51 @@ export function determineResult(
   const playerBlackjack = isBlackjack(playerHand)
   const dealerBlackjack = isBlackjack(dealerHand)
   
+  console.log('🎯 Determining result:')
+  console.log('   Player hand:', playerHand.map(c => `${c.rank}${c.suit[0]}`).join(' '))
+  console.log('   Player score:', playerScore)
+  console.log('   Dealer hand:', dealerHand.map(c => `${c.rank}${c.suit[0]}`).join(' '))
+  console.log('   Dealer score:', dealerScore)
+  
   // Player bust
   if (isBust(playerHand)) {
+    console.log('   → Player busted, result: LOSE')
     return 'lose'
   }
   
   // Dealer bust
   if (isBust(dealerHand)) {
+    console.log('   → Dealer busted, result: WIN')
     return 'win'
   }
   
   // Both have blackjack
   if (playerBlackjack && dealerBlackjack) {
+    console.log('   → Both blackjack, result: PUSH')
     return 'push'
   }
   
   // Player has blackjack, dealer doesn't
   if (playerBlackjack && !dealerBlackjack) {
+    console.log('   → Player blackjack, result: WIN')
     return 'win'
   }
   
   // Dealer has blackjack, player doesn't
   if (dealerBlackjack && !playerBlackjack) {
+    console.log('   → Dealer blackjack, result: LOSE')
     return 'lose'
   }
   
   // Compare scores
   if (playerScore > dealerScore) {
+    console.log('   → Player score higher, result: WIN')
     return 'win'
   } else if (playerScore < dealerScore) {
+    console.log('   → Dealer score higher, result: LOSE')
     return 'lose'
   } else {
+    console.log('   → Equal scores, result: PUSH')
     return 'push'
   }
 }
