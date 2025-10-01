@@ -404,7 +404,20 @@ export default function BlackjackGame() {
       result = determineResult(playerHand, dealerHand)
       const isPlayerBlackjack = isBlackjack(playerHand)
       payout = calculatePayout(gameState.currentBet, result, isPlayerBlackjack)
+      
+      // Calculate final chips: current chips + bet back + winnings/losses
+      // For win: chips + bet + bet = chips + 2*bet
+      // For loss: chips + bet + (-bet) = chips (you lose your bet)
+      // For push: chips + bet + 0 = chips + bet (get bet back)
       newChips = gameState.chips + gameState.currentBet + payout
+      
+      console.log('💰 Payout calculation:')
+      console.log('   Current chips:', gameState.chips)
+      console.log('   Current bet:', gameState.currentBet)
+      console.log('   Result:', result)
+      console.log('   Payout:', payout)
+      console.log('   Final chips:', newChips)
+      console.log('   Has doubled:', gameState.hasDoubled)
       
       setGameState(prev => ({
         ...prev,
