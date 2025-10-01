@@ -11,7 +11,7 @@ interface NavigationProps {
 }
 
 export default function Navigation({ currentView, onViewChange }: NavigationProps) {
-  const { gameUser, signOut } = useAuth()
+  const { user, gameUser, signOut } = useAuth()
   const [showEmail, setShowEmail] = useState(false)
 
   const handleSignOut = async () => {
@@ -52,6 +52,8 @@ export default function Navigation({ currentView, onViewChange }: NavigationProp
             aria-label="Toggle user email"
             className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm max-w-[100px] sm:max-w-none relative cursor-pointer"
           >
+            {/* Inline arrow at the left of the icon */}
+            <span className={`text-gray-400 text-base sm:text-lg transition-transform ${showEmail ? '' : ''}`}>&lt;</span>
             <User className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
             <span className="hidden sm:inline truncate">{gameUser?.email}</span>
           </button>
@@ -60,7 +62,7 @@ export default function Navigation({ currentView, onViewChange }: NavigationProp
           <div
             className={`absolute right-full mr-2 top-1/2 -translate-y-1/2 px-3 py-1.5 bg-gray-900 text-white text-sm rounded-lg border border-gray-700 shadow-lg whitespace-nowrap z-[9999] transition-all duration-200 ${showEmail ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-2 pointer-events-none'}`}
           >
-            {gameUser?.email || 'Not signed in'}
+            {user?.email || gameUser?.email || 'Not signed in'}
             {/* Arrow pointer */}
             <span className="ml-2 text-gray-400">&lt;</span>
           </div>
