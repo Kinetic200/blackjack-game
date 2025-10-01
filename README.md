@@ -3,6 +3,7 @@
 A full-stack blackjack game built with Next.js, featuring AI assistance, user authentication, and game history tracking.
 
 **Developer:** Kinetic200
+
 **Deployed Project:** https://blackjack-game-umber.vercel.app
 ## 🎮 Features
 
