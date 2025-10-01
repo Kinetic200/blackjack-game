@@ -389,11 +389,21 @@ export default function BlackjackGame() {
       const firstResult = determineResult(playerHand, dealerHand)
       const secondResult = determineResult(gameState.splitHand, dealerHand)
       
-      const firstPayout = calculatePayout(betAmount / 2, firstResult, false)
-      const secondPayout = calculatePayout(betAmount / 2, secondResult, false)
+      const halfBet = betAmount / 2
+      const firstPayout = calculatePayout(halfBet, firstResult, false)
+      const secondPayout = calculatePayout(halfBet, secondResult, false)
       
       payout = firstPayout + secondPayout
       newChips = currentChips + betAmount + payout
+      
+      console.log('💰💰 SPLIT Payout calculation:')
+      console.log('   Total bet:', betAmount)
+      console.log('   Per hand bet:', halfBet)
+      console.log('   Hand 1 result:', firstResult, '→ Payout:', firstPayout)
+      console.log('   Hand 2 result:', secondResult, '→ Payout:', secondPayout)
+      console.log('   Combined payout:', payout)
+      console.log('   Current chips:', currentChips)
+      console.log('   Final chips:', newChips)
       
       // Overall result (for display)
       if (firstResult === 'win' && secondResult === 'win') {
