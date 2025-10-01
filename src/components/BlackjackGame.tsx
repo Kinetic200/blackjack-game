@@ -359,32 +359,41 @@ export default function BlackjackGame() {
 
         setTimeout(dealerTurn, 1000)
       } else {
-        // Dealer is done - pass the actual bet and chips if provided (for double down)
-        setTimeout(() => finishGame(gameState.playerHand, dealerHand, actualBet, actualChips), 1000)
+        // Dealer is done - pass the actual bet, chips, and split info
+        setTimeout(() => finishGame(gameState.playerHand, dealerHand, actualBet, actualChips, gameState.isSplit, gameState.splitHand), 1000)
       }
     }
 
     dealerTurn()
   }
 
-  const finishGame = async (playerHand: Card[], dealerHand: Card[], actualBet?: number, actualChips?: number) => {
+  const finishGame = async (playerHand: Card[], dealerHand: Card[], actualBet?: number, actualChips?: number, isSplitGame?: boolean, splitHandCards?: Card[] | null) => {
     // Use passed bet or current bet from state
     const betAmount = actualBet || gameState.currentBet
     // Use passed chips or current chips from state (for double down, chips are already deducted)
     const currentChips = actualChips ?? gameState.chips
+    // Check if this is a split game (passed or from state)
+    const isSplit = isSplitGame ?? gameState.isSplit
+    const splitHand = splitHandCards ?? gameState.splitHand
+    
     let result: 'win' | 'lose' | 'push'
     let payout: number
     let newChips: number
     
+    console.log('🎮 finishGame called with:')
+    console.log('   isSplit:', isSplit)
+    console.log('   splitHand:', splitHand)
+    console.log('   betAmount:', betAmount)
+    
     // Check if player already busted (shouldn't calculate dealer result)
     const playerBusted = calculateHandValue(playerHand) > 21
     
-    if (playerBusted && !gameState.isSplit) {
+    if (playerBusted && !isSplit) {
       // Player busted in regular game - immediate loss
       result = 'lose'
       payout = calculatePayout(betAmount, result, false)
       newChips = currentChips + betAmount + payout
-    } else if (gameState.isSplit && gameState.splitHand) {
+    } else if (isSplit && splitHand) {
       // Calculate results for both hands
       const firstResult = determineResult(playerHand, dealerHand)
       const secondResult = determineResult(gameState.splitHand, dealerHand)
