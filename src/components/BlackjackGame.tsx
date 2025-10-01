@@ -245,7 +245,7 @@ export default function BlackjackGame() {
       })
       
       toast.error('Bust! You lose.')
-      setTimeout(() => finishGame(newPlayerHand, gameState.dealerHand), 1000)
+      setTimeout(() => finishGame(newPlayerHand, gameState.dealerHand, originalBet * 2), 1000)
     } else {
       // Continue to dealer turn
       setGameState({
@@ -264,8 +264,8 @@ export default function BlackjackGame() {
         hasDoubled: true
       })
       
-      // Dealer plays automatically
-      setTimeout(() => playDealerTurn(), 1000)
+      // Dealer plays automatically (need to pass doubled bet through)
+      setTimeout(() => playDealerTurn(originalBet * 2), 1000)
     }
   }
 
@@ -333,7 +333,7 @@ export default function BlackjackGame() {
     }
   }
 
-  const playDealerTurn = () => {
+  const playDealerTurn = (actualBet?: number) => {
     let dealerHand = [...gameState.dealerHand]
     
     const dealerTurn = () => {
@@ -349,15 +349,17 @@ export default function BlackjackGame() {
 
         setTimeout(dealerTurn, 1000)
       } else {
-        // Dealer is done
-        setTimeout(() => finishGame(gameState.playerHand, dealerHand), 1000)
+        // Dealer is done - pass the actual bet if provided (for double down)
+        setTimeout(() => finishGame(gameState.playerHand, dealerHand, actualBet), 1000)
       }
     }
 
     dealerTurn()
   }
 
-  const finishGame = async (playerHand: Card[], dealerHand: Card[]) => {
+  const finishGame = async (playerHand: Card[], dealerHand: Card[], actualBet?: number) => {
+    // Use passed bet or current bet from state
+    const betAmount = actualBet || gameState.currentBet
     let result: 'win' | 'lose' | 'push'
     let payout: number
     let newChips: number
@@ -368,18 +370,18 @@ export default function BlackjackGame() {
     if (playerBusted && !gameState.isSplit) {
       // Player busted in regular game - immediate loss
       result = 'lose'
-      payout = calculatePayout(gameState.currentBet, result, false)
-      newChips = gameState.chips + gameState.currentBet + payout
+      payout = calculatePayout(betAmount, result, false)
+      newChips = gameState.chips + betAmount + payout
     } else if (gameState.isSplit && gameState.splitHand) {
       // Calculate results for both hands
       const firstResult = determineResult(playerHand, dealerHand)
       const secondResult = determineResult(gameState.splitHand, dealerHand)
       
-      const firstPayout = calculatePayout(gameState.currentBet / 2, firstResult, false)
-      const secondPayout = calculatePayout(gameState.currentBet / 2, secondResult, false)
+      const firstPayout = calculatePayout(betAmount / 2, firstResult, false)
+      const secondPayout = calculatePayout(betAmount / 2, secondResult, false)
       
       payout = firstPayout + secondPayout
-      newChips = gameState.chips + gameState.currentBet + payout
+      newChips = gameState.chips + betAmount + payout
       
       // Overall result (for display)
       if (firstResult === 'win' && secondResult === 'win') {
@@ -403,17 +405,18 @@ export default function BlackjackGame() {
       // Regular game (no split)
       result = determineResult(playerHand, dealerHand)
       const isPlayerBlackjack = isBlackjack(playerHand)
-      payout = calculatePayout(gameState.currentBet, result, isPlayerBlackjack)
+      payout = calculatePayout(betAmount, result, isPlayerBlackjack)
       
       // Calculate final chips: current chips + bet back + winnings/losses
       // For win: chips + bet + bet = chips + 2*bet
       // For loss: chips + bet + (-bet) = chips (you lose your bet)
       // For push: chips + bet + 0 = chips + bet (get bet back)
-      newChips = gameState.chips + gameState.currentBet + payout
+      newChips = gameState.chips + betAmount + payout
       
       console.log('💰 Payout calculation:')
       console.log('   Current chips:', gameState.chips)
-      console.log('   Current bet:', gameState.currentBet)
+      console.log('   Actual bet (passed):', betAmount)
+      console.log('   State current bet:', gameState.currentBet)
       console.log('   Result:', result)
       console.log('   Payout:', payout)
       console.log('   Final chips:', newChips)
