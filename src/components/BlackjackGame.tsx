@@ -143,7 +143,7 @@ export default function BlackjackGame() {
           playerScore: newPlayerScore,
           canHit: newPlayerScore < 21,
           canStand: true,
-          canDouble: false,
+          canDouble: false, // Can't double after hitting
           canSplit: false
         })
       }
@@ -285,6 +285,7 @@ export default function BlackjackGame() {
     // Split the hand
     const firstHand = [gameState.playerHand[0], drawCard()]
     const secondHand = [gameState.playerHand[1]]
+    const chipsAfterSplit = gameState.chips - gameState.currentBet
     
     setGameState({
       ...gameState,
@@ -293,12 +294,12 @@ export default function BlackjackGame() {
       playerScore: calculateHandValue(firstHand),
       splitScore: calculateHandValue(secondHand),
       currentBet: gameState.currentBet * 2,
-      chips: gameState.chips - gameState.currentBet, // Deduct additional bet
+      chips: chipsAfterSplit,
       isSplit: true,
       activeSplitHand: 'first',
       canHit: true,
       canStand: true,
-      canDouble: false,
+      canDouble: canDoubleDown(firstHand, chipsAfterSplit, gameState.currentBet), // Can double on split
       canSplit: false
     })
     
@@ -319,7 +320,7 @@ export default function BlackjackGame() {
         activeSplitHand: 'second',
         canHit: true,
         canStand: true,
-        canDouble: false,
+        canDouble: canDoubleDown(newSplitHand, gameState.chips, gameState.currentBet / 2), // Can double on second hand
         canSplit: false
       })
       
