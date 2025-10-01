@@ -472,7 +472,8 @@ export default function BlackjackGame() {
         // Use passed hands if available, otherwise use current state
         const playerHandToUse = finalPlayerHand && finalPlayerHand.length > 0 ? finalPlayerHand : gameState.playerHand
         const splitHandToUse = finalSplitHand !== undefined ? finalSplitHand : gameState.splitHand
-        setTimeout(() => finishGame(playerHandToUse, dealerHand, actualBet, actualChips, true, splitHandToUse), 1000)
+        // Use the actual split state; do NOT force split mode
+        setTimeout(() => finishGame(playerHandToUse, dealerHand, actualBet, actualChips, gameState.isSplit, splitHandToUse), 1000)
       }
     }
 
