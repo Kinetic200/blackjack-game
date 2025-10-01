@@ -120,6 +120,7 @@ export default function BlackjackGame() {
       
       if (newPlayerScore > 21) {
         // First hand busts, automatically move to second hand
+        console.log('🚨 Hand 1 BUSTED! Score:', newPlayerScore, 'Hand:', newPlayerHand)
         toast.error('Hand 1 busts! Moving to Hand 2...')
         
         if (gameState.splitHand) {
@@ -155,6 +156,7 @@ export default function BlackjackGame() {
       
       if (newSplitScore > 21) {
         // Second hand busts, move to dealer turn
+        console.log('🚨 Hand 2 BUSTED! Score:', newSplitScore, 'Hand:', newSplitHand)
         toast.error('Hand 2 busts! Dealer\'s turn...')
         setGameState({
           ...gameState,
@@ -170,6 +172,7 @@ export default function BlackjackGame() {
         // Pass the busted hand directly to ensure correct calculation
         setTimeout(() => {
           console.log('🚨 Hand 2 busted, calling playDealerTurn with busted hand:', newSplitHand)
+          console.log('🚨 Hand 2 score should be:', calculateHandValue(newSplitHand))
           playDealerTurn(gameState.currentBet, gameState.chips, gameState.playerHand, newSplitHand)
         }, 1000)
       } else {
@@ -493,8 +496,11 @@ export default function BlackjackGame() {
     
     console.log('🎮 finishGame called with:')
     console.log('   isSplit:', isSplit)
+    console.log('   finalPlayerHand:', finalPlayerHand)
     console.log('   finalSplitHand:', finalSplitHand)
     console.log('   betAmount:', betAmount)
+    console.log('   finalPlayerHand score:', calculateHandValue(finalPlayerHand))
+    console.log('   finalSplitHand score:', finalSplitHand ? calculateHandValue(finalSplitHand) : 'null')
     
     // Check if player already busted (shouldn't calculate dealer result)
     const playerBusted = calculateHandValue(finalPlayerHand) > 21
