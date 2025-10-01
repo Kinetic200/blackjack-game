@@ -570,8 +570,9 @@ export default function BlackjackGame() {
       newChips = currentChips + betAmount + payout
       
       console.log('💰 Payout calculation:')
-      console.log('   Current chips (from state):', gameState.chips)
-      console.log('   Current chips (passed/actual):', currentChips)
+      // Note: gameState.chips here can be stale due to setState batching; currentChips is authoritative
+      console.log('   Current chips (state - may be stale):', gameState.chips)
+      console.log('   Current chips (actual):', currentChips)
       console.log('   Actual bet (passed):', betAmount)
       console.log('   State current bet:', gameState.currentBet)
       console.log('   Result:', result)
@@ -599,7 +600,7 @@ export default function BlackjackGame() {
       await supabase.from('game_history').insert([
         {
           user_id: gameUser.id,
-          bet_amount: gameState.currentBet,
+          bet_amount: betAmount,
           player_hand: JSON.stringify(finalPlayerHand),
           dealer_hand: JSON.stringify(dealerHand),
           player_score: calculateHandValue(finalPlayerHand),
