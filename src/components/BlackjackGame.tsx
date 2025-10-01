@@ -104,7 +104,8 @@ export default function BlackjackGame() {
 
     // Check for immediate blackjack
     if (playerHasBlackjack) {
-      setTimeout(() => finishGame(playerHand, dealerHand), 1000)
+      // Pass the actual bet and chips to avoid race with state update
+      setTimeout(() => finishGame(playerHand, dealerHand, bet, newChips), 1000)
     }
   }
 
