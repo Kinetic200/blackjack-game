@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { Button } from '@/components/ui/button'
 import { History, LogOut, User } from 'lucide-react'
@@ -11,6 +12,7 @@ interface NavigationProps {
 
 export default function Navigation({ currentView, onViewChange }: NavigationProps) {
   const { gameUser, signOut } = useAuth()
+  const [showEmail, setShowEmail] = useState(false)
 
   const handleSignOut = async () => {
     await signOut()
@@ -42,16 +44,25 @@ export default function Navigation({ currentView, onViewChange }: NavigationProp
           </div>
         </div>
 
-        <div className="flex items-center gap-2 sm:gap-4 text-gray-400">
-          <div className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm max-w-[100px] sm:max-w-none relative group cursor-pointer">
-            <User className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
+        <div className="flex items-center gap-2 sm:gap-4 text-gray-400 relative">
+          {/* Click target: user icon */}
+          <button
+            type="button"
+            onClick={() => setShowEmail(v => !v)}
+            aria-label="Toggle user email"
+            className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm max-w-[100px] sm:max-w-none relative cursor-pointer"
+          >
+            <User className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
             <span className="hidden sm:inline truncate">{gameUser?.email}</span>
-            {/* Tooltip - shows on all screen sizes */}
-            <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-sm rounded-lg opacity-100 transition-all duration-300 pointer-events-none whitespace-nowrap z-[9999] border border-gray-600 shadow-lg">
-              {gameUser?.email}
-              {/* Arrow pointing down */}
-              <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
-            </div>
+          </button>
+
+          {/* Slide-out email pill to the left of the icon */}
+          <div
+            className={`absolute right-full mr-2 top-1/2 -translate-y-1/2 px-3 py-1.5 bg-gray-900 text-white text-sm rounded-lg border border-gray-700 shadow-lg whitespace-nowrap z-[9999] transition-all duration-200 ${showEmail ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-2 pointer-events-none'}`}
+          >
+            {gameUser?.email || 'Not signed in'}
+            {/* Arrow pointer */}
+            <span className="ml-2 text-gray-400">&lt;</span>
           </div>
           <Button
             variant="ghost"
