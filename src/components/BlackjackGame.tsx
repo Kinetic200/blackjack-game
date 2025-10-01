@@ -357,8 +357,8 @@ export default function BlackjackGame() {
     }
 
     // Show result toast
-    const resultMessages = {
-      win: isPlayerBlackjack ? 'Blackjack! You win!' : 'You win!',
+    const resultMessages: Record<'win' | 'lose' | 'push', string> = {
+      win: gameState.isSplit ? 'Results in!' : (isBlackjack(playerHand) ? 'Blackjack! You win!' : 'You win!'),
       lose: 'You lose!',
       push: 'Push! It\'s a tie!'
     }
