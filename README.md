@@ -8,16 +8,18 @@ A full-stack blackjack game built with Next.js, featuring AI assistance, user au
 ## 🎮 Features
 
 - **Functionally Correct Blackjack Game**
-  - Standard blackjack rules with dealer hitting on 16 and standing on 17
-  - Proper card value calculation including Ace handling (1 or 11)
-  - Blackjack detection and special payouts (3:2)
-  - Push detection for ties
+  - Standard rules: dealer hits ≤16, stands ≥17
+  - Accurate hand values with automatic Ace adjustment (1 or 11)
+  - Blackjack detection and 3:2 payout on natural 21 (two cards)
+  - Push detection and correct chip returns
+  - Double Down (including on split hands)
+  - Split hands (same rank or any two 10‑value cards: 10/J/Q/K)
 
 - **Modern UI/UX**
-  - Responsive design optimized for mobile and desktop
-  - Animated card dealing and transitions
-  - Clean, intuitive interface with green felt theme
-  - Real-time game state updates
+  - Dark theme, responsive on mobile/desktop
+  - Placeholder card slots before dealing for visual stability
+  - Consistent button sizing, chip top‑up, and detailed result toasts
+  - Optional user‑email reveal next to avatar (tap to expand)
 
 - **Database Integration**
   - User authentication with Supabase
@@ -26,10 +28,9 @@ A full-stack blackjack game built with Next.js, featuring AI assistance, user au
   - Automatic user creation with 500 starting chips
 
 - **Game History & Statistics**
-  - Detailed game history page
-  - Win/loss statistics and win rate calculation
-  - Net chip tracking
-  - Hand-by-hand breakdown with visual card representation
+  - Detailed history with correct bet_amount and chips_change
+  - Win/loss/push stats and win rate
+  - Hand‑by‑hand breakdown with rendered cards
 
 - **AI Assistant Integration**
   - Gemini AI-powered blackjack strategy advice
@@ -150,6 +151,21 @@ Open [http://localhost:3000](http://localhost:3000) to play the game!
   - Same total as dealer: Push (bet returned)
   - Bust (over 21): Lose
 
+### Advanced actions implemented
+- **Double Down**
+  - Available with two cards and sufficient chips
+  - Draw exactly one more card, then stand automatically
+  - Payouts use the doubled bet; chip deduction occurs before the draw
+- **Split**
+  - Available with two cards of the same rank, or any two 10‑value cards (10/J/Q/K)
+  - Creates two hands, each with the original bet
+  - You play Hand 1, then Hand 2; busting a hand does not affect the other
+  - Double Down is allowed on split hands (per‑hand chip checks)
+
+### Tie and Blackjack precedence
+- Dealer Blackjack (two cards) beats a regular 21 made with 3+ cards
+- Otherwise 21 vs 21 is a push
+
 ## 🤖 AI Assistant
 
 The integrated AI assistant provides strategic advice based on:
@@ -179,10 +195,20 @@ Track your blackjack journey with detailed statistics:
 ## 🎨 Design Assumptions
 
 - **Infinite Deck:** Cards are drawn randomly with replacement (no deck tracking)
-- **Available Actions:** Only Hit and Stand (no splitting, doubling, or insurance)
-- **Client-Side Logic:** Game mechanics run in browser for smooth experience
+- **Available Actions:** Hit, Stand, Double Down, Split (no insurance/surrender)
+- **Client-Side Logic:** Game mechanics run in the browser for responsiveness
 - **Chip Purchases:** Players can buy additional chips when running low
 - **Mobile-First:** Responsive design prioritizes mobile experience
+
+## 🧩 Known Limitations / Notes
+- Splitting Aces behaves like regular splits (multiple hits permitted); casino rules vary
+- No insurance or surrender options
+- Random infinite deck; card counting is not applicable
+
+## 🛟 Troubleshooting
+- If AI advisor fails, verify your Gemini model access and API key in `.env.local` and Vercel
+- If Supabase returns 406/409, double‑check RLS policies above and ensure `users` are created on first sign‑in
+- If production shows stale UI after deploy, hard‑refresh or clear cache
 
 ## 📱 Mobile Optimization
 
