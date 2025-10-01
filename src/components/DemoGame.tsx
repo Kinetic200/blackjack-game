@@ -29,7 +29,10 @@ export default function DemoGame() {
     chips: 500, // Start with 500 chips in demo mode
     canHit: false,
     canStand: false,
-    showDealerCard: false
+    canDouble: false,
+    canSplit: false,
+    showDealerCard: false,
+    hasDoubled: false
   })
   const [betAmount, setBetAmount] = useState('')
   const [gamesPlayed, setGamesPlayed] = useState(0)
@@ -67,7 +70,10 @@ export default function DemoGame() {
       chips: gameState.chips - bet,
       canHit: !isBlackjack(playerHand),
       canStand: true,
+      canDouble: false,
+      canSplit: false,
       showDealerCard: false,
+      hasDoubled: false,
       result: isBlackjack(playerHand) && !isBlackjack(dealerHand) ? 'win' : null
     })
 
@@ -95,7 +101,9 @@ export default function DemoGame() {
         gameStatus: 'finished',
         result: 'lose',
         canHit: false,
-        canStand: false
+        canStand: false,
+        canDouble: false,
+        canSplit: false
       })
       setTimeout(() => finishGame(newPlayerHand, gameState.dealerHand), 1000)
     } else {
@@ -117,6 +125,8 @@ export default function DemoGame() {
       gameStatus: 'dealer-turn',
       canHit: false,
       canStand: false,
+      canDouble: false,
+      canSplit: false,
       showDealerCard: true,
       dealerScore: calculateHandValue(gameState.dealerHand)
     })
@@ -194,7 +204,10 @@ export default function DemoGame() {
       chips: gameState.chips,
       canHit: false,
       canStand: false,
-      showDealerCard: false
+      canDouble: false,
+      canSplit: false,
+      showDealerCard: false,
+      hasDoubled: false
     })
   }
 
