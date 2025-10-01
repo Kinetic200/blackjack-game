@@ -148,7 +148,22 @@ export function canDoubleDown(hand: Card[], chips: number, currentBet: number): 
   return hand.length === 2 && chips >= currentBet
 }
 
-// Check if player can split (two cards of same rank)
+// Check if player can split (two cards of same rank OR both 10-value cards)
 export function canSplit(hand: Card[], chips: number, currentBet: number): boolean {
-  return hand.length === 2 && hand[0].rank === hand[1].rank && chips >= currentBet
+  if (hand.length !== 2 || chips < currentBet) {
+    return false
+  }
+  
+  // Can split if same rank (two 7s, two Aces, etc.)
+  if (hand[0].rank === hand[1].rank) {
+    return true
+  }
+  
+  // Can split if both cards are 10-value (10, J, Q, K)
+  const tenValueRanks = ['10', 'J', 'Q', 'K']
+  if (tenValueRanks.includes(hand[0].rank) && tenValueRanks.includes(hand[1].rank)) {
+    return true
+  }
+  
+  return false
 }
