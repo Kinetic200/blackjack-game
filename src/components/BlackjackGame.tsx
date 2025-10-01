@@ -270,7 +270,10 @@ export default function BlackjackGame() {
       chips: gameState.chips,
       canHit: false,
       canStand: false,
-      showDealerCard: false
+      canDouble: false,
+      canSplit: false,
+      showDealerCard: false,
+      hasDoubled: false
     })
     setAiAdvice('')
   }
