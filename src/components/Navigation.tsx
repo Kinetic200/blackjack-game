@@ -43,11 +43,11 @@ export default function Navigation({ currentView, onViewChange }: NavigationProp
         </div>
 
         <div className="flex items-center gap-2 sm:gap-4 text-gray-400">
-          <div className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm max-w-[100px] sm:max-w-none relative group">
+          <div className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm max-w-[100px] sm:max-w-none relative group cursor-pointer">
             <User className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
             <span className="hidden sm:inline truncate">{gameUser?.email}</span>
-            {/* Tooltip for mobile */}
-            <div className="sm:hidden absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
+            {/* Tooltip - shows on all screen sizes */}
+            <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-800 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50 border border-gray-700">
               {gameUser?.email}
             </div>
           </div>

@@ -149,10 +149,10 @@ export default function GameHistory({ onBack }: GameHistoryProps) {
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Game
           </Button>
-          <div className="relative group">
+          <div className="relative group cursor-pointer">
             <h1 className="text-3xl font-bold text-white">Game History</h1>
             {/* Tooltip showing user email */}
-            <div className="absolute bottom-full left-0 mb-2 px-3 py-2 bg-gray-800 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
+            <div className="absolute bottom-full left-0 mb-2 px-3 py-2 bg-gray-800 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50 border border-gray-700">
               {gameUser?.email}
             </div>
           </div>
