@@ -182,7 +182,7 @@ export default function BlackjackGame() {
       const newPlayerScore = calculateHandValue(newPlayerHand)
 
       if (newPlayerScore > 21) {
-        // Player busts
+        // Player busts - immediate loss, dealer doesn't play
         setGameState({
           ...gameState,
           playerHand: newPlayerHand,
@@ -192,8 +192,14 @@ export default function BlackjackGame() {
           canHit: false,
           canStand: false,
           canDouble: false,
-          canSplit: false
+          canSplit: false,
+          showDealerCard: true,
+          dealerScore: calculateHandValue(gameState.dealerHand)
         })
+        
+        toast.error('Bust! You lose.')
+        
+        // Call finishGame to save and update chips
         setTimeout(() => finishGame(newPlayerHand, gameState.dealerHand), 1000)
       } else {
         setGameState({
@@ -330,7 +336,15 @@ export default function BlackjackGame() {
     let payout: number
     let newChips: number
     
-    if (gameState.isSplit && gameState.splitHand) {
+    // Check if player already busted (shouldn't calculate dealer result)
+    const playerBusted = calculateHandValue(playerHand) > 21
+    
+    if (playerBusted && !gameState.isSplit) {
+      // Player busted in regular game - immediate loss
+      result = 'lose'
+      payout = calculatePayout(gameState.currentBet, result, false)
+      newChips = gameState.chips + gameState.currentBet + payout
+    } else if (gameState.isSplit && gameState.splitHand) {
       // Calculate results for both hands
       const firstResult = determineResult(playerHand, dealerHand)
       const secondResult = determineResult(gameState.splitHand, dealerHand)
