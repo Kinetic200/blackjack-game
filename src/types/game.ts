@@ -28,6 +28,7 @@ export interface GameState {
   splitScore: number
   activeSplitHand: 'first' | 'second' | null
   splitResults: { first: 'win' | 'lose' | 'push' | null; second: 'win' | 'lose' | 'push' | null }
+  splitDoubled: { first: boolean; second: boolean } // Track which hands were doubled
 }
 
 export interface GameHistory {

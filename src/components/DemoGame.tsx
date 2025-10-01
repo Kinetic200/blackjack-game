@@ -37,7 +37,8 @@ export default function DemoGame() {
     splitHand: null,
     splitScore: 0,
     activeSplitHand: null,
-    splitResults: { first: null, second: null }
+    splitResults: { first: null, second: null },
+    splitDoubled: { first: false, second: false }
   })
   const [betAmount, setBetAmount] = useState('')
   const [gamesPlayed, setGamesPlayed] = useState(0)

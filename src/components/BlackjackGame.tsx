@@ -43,7 +43,8 @@ export default function BlackjackGame() {
     splitHand: null,
     splitScore: 0,
     activeSplitHand: null,
-    splitResults: { first: null, second: null }
+    splitResults: { first: null, second: null },
+    splitDoubled: { first: false, second: false }
   })
   const [betAmount, setBetAmount] = useState('')
   const [aiAdvice, setAiAdvice] = useState('')
@@ -221,8 +222,108 @@ export default function BlackjackGame() {
     console.log('🎲 DOUBLE DOWN STARTED:')
     console.log('   gameState.chips:', gameState.chips)
     console.log('   gameState.currentBet:', gameState.currentBet)
+    console.log('   isSplit:', gameState.isSplit)
+    console.log('   activeSplitHand:', gameState.activeSplitHand)
     
-    // Double the bet and deduct from chips
+    // Handle double down for split hands
+    if (gameState.isSplit) {
+      const newCard = drawCard()
+      
+      if (gameState.activeSplitHand === 'first') {
+        // Doubling on first split hand
+        const newPlayerHand = [...gameState.playerHand, newCard]
+        const newPlayerScore = calculateHandValue(newPlayerHand)
+        const perHandBet = gameState.currentBet / 2 // Current bet is total for both hands
+        const chipsAfterDouble = gameState.chips - perHandBet // Deduct one hand's bet for doubling
+        
+        console.log('   Doubling first split hand')
+        console.log('   Per hand bet:', perHandBet)
+        console.log('   Chips after double:', chipsAfterDouble)
+        
+        if (newPlayerScore > 21) {
+          // First hand busts, move to second hand
+          toast.error('Hand 1 busts on double! Moving to Hand 2...')
+          
+          if (gameState.splitHand) {
+            const newSplitHand = [...gameState.splitHand, drawCard()]
+            setGameState({
+              ...gameState,
+              playerHand: newPlayerHand,
+              playerScore: newPlayerScore,
+              splitHand: newSplitHand,
+              splitScore: calculateHandValue(newSplitHand),
+              chips: chipsAfterDouble,
+              activeSplitHand: 'second',
+              canHit: true,
+              canStand: true,
+              canDouble: canDoubleDown(newSplitHand, chipsAfterDouble, perHandBet),
+              canSplit: false,
+              hasDoubled: true, // Mark that first hand was doubled
+              splitDoubled: { first: true, second: false }
+            })
+          }
+        } else {
+          // First hand doesn't bust, move to second hand after double
+          if (gameState.splitHand) {
+            const newSplitHand = [...gameState.splitHand, drawCard()]
+            setGameState({
+              ...gameState,
+              playerHand: newPlayerHand,
+              playerScore: newPlayerScore,
+              splitHand: newSplitHand,
+              splitScore: calculateHandValue(newSplitHand),
+              chips: chipsAfterDouble,
+              activeSplitHand: 'second',
+              canHit: true,
+              canStand: true,
+              canDouble: canDoubleDown(newSplitHand, chipsAfterDouble, perHandBet),
+              canSplit: false,
+              hasDoubled: true, // Mark that first hand was doubled
+              splitDoubled: { first: true, second: false }
+            })
+            toast.info('Hand 1 doubled! Now playing Hand 2...')
+          }
+        }
+      } else if (gameState.activeSplitHand === 'second' && gameState.splitHand) {
+        // Doubling on second split hand
+        const newSplitHand = [...gameState.splitHand, newCard]
+        const newSplitScore = calculateHandValue(newSplitHand)
+        const perHandBet = gameState.currentBet / 2
+        const chipsAfterDouble = gameState.chips - perHandBet
+        
+        console.log('   Doubling second split hand')
+        console.log('   Per hand bet:', perHandBet)
+        console.log('   Chips after double:', chipsAfterDouble)
+        
+        // After doubling second hand, always go to dealer
+        setGameState({
+          ...gameState,
+          splitHand: newSplitHand,
+          splitScore: newSplitScore,
+          chips: chipsAfterDouble,
+          gameStatus: 'dealer-turn',
+          canHit: false,
+          canStand: false,
+          canDouble: false,
+          canSplit: false,
+          showDealerCard: true,
+          dealerScore: calculateHandValue(gameState.dealerHand),
+          activeSplitHand: null,
+          hasDoubled: true,
+          splitDoubled: { ...gameState.splitDoubled, second: true }
+        })
+        
+        toast.info('Hand 2 doubled! Dealer\'s turn...')
+        // Calculate total bet accounting for both hands and any doubles
+        const firstHandBet = gameState.splitDoubled.first ? perHandBet * 2 : perHandBet
+        const secondHandBet = perHandBet * 2 // This hand is being doubled now
+        const totalBet = firstHandBet + secondHandBet
+        setTimeout(() => playDealerTurn(totalBet, chipsAfterDouble), 1000)
+      }
+      return // Exit early for split hands
+    }
+    
+    // Regular double down (non-split)
     const newCard = drawCard()
     const newPlayerHand = [...gameState.playerHand, newCard]
     const newPlayerScore = calculateHandValue(newPlayerHand)
@@ -399,16 +500,22 @@ export default function BlackjackGame() {
       const firstResult = determineResult(playerHand, dealerHand)
       const secondResult = determineResult(splitHand, dealerHand)
       
-      const halfBet = betAmount / 2
-      const firstPayout = calculatePayout(halfBet, firstResult, false)
-      const secondPayout = calculatePayout(halfBet, secondResult, false)
+      // Calculate actual bet for each hand (accounting for doubles)
+      const baseBet = betAmount / (gameState.splitDoubled.first && gameState.splitDoubled.second ? 4 : 
+                                    gameState.splitDoubled.first || gameState.splitDoubled.second ? 3 : 2)
+      const firstHandBet = gameState.splitDoubled.first ? baseBet * 2 : baseBet
+      const secondHandBet = gameState.splitDoubled.second ? baseBet * 2 : baseBet
+      
+      const firstPayout = calculatePayout(firstHandBet, firstResult, false)
+      const secondPayout = calculatePayout(secondHandBet, secondResult, false)
       
       payout = firstPayout + secondPayout
       newChips = currentChips + betAmount + payout
       
       console.log('💰💰 SPLIT Payout calculation:')
       console.log('   Total bet:', betAmount)
-      console.log('   Per hand bet:', halfBet)
+      console.log('   Hand 1 doubled:', gameState.splitDoubled.first, '→ Bet:', firstHandBet)
+      console.log('   Hand 2 doubled:', gameState.splitDoubled.second, '→ Bet:', secondHandBet)
       console.log('   Hand 1 result:', firstResult, '→ Payout:', firstPayout)
       console.log('   Hand 2 result:', secondResult, '→ Payout:', secondPayout)
       console.log('   Combined payout:', payout)
@@ -551,7 +658,8 @@ export default function BlackjackGame() {
       splitHand: null,
       splitScore: 0,
       activeSplitHand: null,
-      splitResults: { first: null, second: null }
+      splitResults: { first: null, second: null },
+      splitDoubled: { first: false, second: false }
     })
     setAiAdvice('')
   }
