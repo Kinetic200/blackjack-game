@@ -218,6 +218,10 @@ export default function BlackjackGame() {
   const doubleDown = () => {
     if (gameState.gameStatus !== 'playing' || !gameState.canDouble) return
     
+    console.log('🎲 DOUBLE DOWN STARTED:')
+    console.log('   gameState.chips:', gameState.chips)
+    console.log('   gameState.currentBet:', gameState.currentBet)
+    
     // Double the bet and deduct from chips
     const newCard = drawCard()
     const newPlayerHand = [...gameState.playerHand, newCard]
@@ -226,6 +230,9 @@ export default function BlackjackGame() {
     
     // Calculate chips AFTER double deduction (BEFORE setState to avoid async issues)
     const chipsAfterDouble = gameState.chips - originalBet
+    
+    console.log('   Chips after double calculation:', chipsAfterDouble)
+    console.log('   Doubled bet will be:', originalBet * 2)
     
     // Check if player busts on double down
     if (newPlayerScore > 21) {
