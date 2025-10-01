@@ -78,28 +78,31 @@ export default function BlackjackGame() {
 
     const newChips = gameState.chips - bet
     
+    const playerHasBlackjack = isBlackjack(playerHand)
+    const dealerHasBlackjack = isBlackjack(dealerHand)
+    
     setGameState({
       ...gameState,
       playerHand,
       dealerHand,
       playerScore,
-      dealerScore: calculateHandValue([dealerCard1]), // Only show first dealer card
-      gameStatus: isBlackjack(playerHand) ? 'finished' : 'playing',
+      dealerScore: playerHasBlackjack ? calculateHandValue(dealerHand) : calculateHandValue([dealerCard1]),
+      gameStatus: playerHasBlackjack ? 'finished' : 'playing',
       currentBet: bet,
       chips: newChips,
-      canHit: !isBlackjack(playerHand),
+      canHit: !playerHasBlackjack,
       canStand: true,
-      canDouble: canDoubleDown(playerHand, newChips, bet),
-      canSplit: canSplit(playerHand, newChips, bet),
-      showDealerCard: false,
+      canDouble: !playerHasBlackjack && canDoubleDown(playerHand, newChips, bet),
+      canSplit: !playerHasBlackjack && canSplit(playerHand, newChips, bet),
+      showDealerCard: playerHasBlackjack,
       hasDoubled: false,
-      result: isBlackjack(playerHand) && !isBlackjack(dealerHand) ? 'win' : null
+      result: playerHasBlackjack ? (dealerHasBlackjack ? 'push' : 'win') : null
     })
 
     setBetAmount('')
 
     // Check for immediate blackjack
-    if (isBlackjack(playerHand)) {
+    if (playerHasBlackjack) {
       setTimeout(() => finishGame(playerHand, dealerHand), 1000)
     }
   }
@@ -114,27 +117,65 @@ export default function BlackjackGame() {
       const newPlayerHand = [...gameState.playerHand, newCard]
       const newPlayerScore = calculateHandValue(newPlayerHand)
       
-      setGameState({
-        ...gameState,
-        playerHand: newPlayerHand,
-        playerScore: newPlayerScore,
-        canHit: newPlayerScore < 21,
-        canStand: true,
-        canDouble: false,
-        canSplit: false
-      })
+      if (newPlayerScore > 21) {
+        // First hand busts, automatically move to second hand
+        toast.error('Hand 1 busts! Moving to Hand 2...')
+        
+        if (gameState.splitHand) {
+          const newSplitHand = [...gameState.splitHand, drawCard()]
+          setGameState({
+            ...gameState,
+            playerHand: newPlayerHand,
+            playerScore: newPlayerScore,
+            splitHand: newSplitHand,
+            splitScore: calculateHandValue(newSplitHand),
+            activeSplitHand: 'second',
+            canHit: true,
+            canStand: true,
+            canDouble: false,
+            canSplit: false
+          })
+        }
+      } else {
+        setGameState({
+          ...gameState,
+          playerHand: newPlayerHand,
+          playerScore: newPlayerScore,
+          canHit: newPlayerScore < 21,
+          canStand: true,
+          canDouble: false,
+          canSplit: false
+        })
+      }
     } else if (gameState.isSplit && gameState.activeSplitHand === 'second' && gameState.splitHand) {
       // Hitting on second split hand
       const newSplitHand = [...gameState.splitHand, newCard]
       const newSplitScore = calculateHandValue(newSplitHand)
       
-      setGameState({
-        ...gameState,
-        splitHand: newSplitHand,
-        splitScore: newSplitScore,
-        canHit: newSplitScore < 21,
-        canStand: true
-      })
+      if (newSplitScore > 21) {
+        // Second hand busts, move to dealer turn
+        toast.error('Hand 2 busts! Dealer\'s turn...')
+        setGameState({
+          ...gameState,
+          splitHand: newSplitHand,
+          splitScore: newSplitScore,
+          gameStatus: 'dealer-turn',
+          canHit: false,
+          canStand: false,
+          showDealerCard: true,
+          dealerScore: calculateHandValue(gameState.dealerHand),
+          activeSplitHand: null
+        })
+        setTimeout(() => playDealerTurn(), 1000)
+      } else {
+        setGameState({
+          ...gameState,
+          splitHand: newSplitHand,
+          splitScore: newSplitScore,
+          canHit: newSplitScore < 21,
+          canStand: true
+        })
+      }
     } else {
       // Regular hit (no split)
       const newPlayerHand = [...gameState.playerHand, newCard]
