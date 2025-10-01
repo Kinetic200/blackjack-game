@@ -22,6 +22,12 @@ export interface GameState {
   canSplit: boolean
   showDealerCard: boolean
   hasDoubled: boolean
+  // Split-specific fields
+  isSplit: boolean
+  splitHand: Card[] | null
+  splitScore: number
+  activeSplitHand: 'first' | 'second' | null
+  splitResults: { first: 'win' | 'lose' | 'push' | null; second: 'win' | 'lose' | 'push' | null }
 }
 
 export interface GameHistory {

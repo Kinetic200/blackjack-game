@@ -38,7 +38,12 @@ export default function BlackjackGame() {
     canDouble: false,
     canSplit: false,
     showDealerCard: false,
-    hasDoubled: false
+    hasDoubled: false,
+    isSplit: false,
+    splitHand: null,
+    splitScore: 0,
+    activeSplitHand: null,
+    splitResults: { first: null, second: null }
   })
   const [betAmount, setBetAmount] = useState('')
   const [aiAdvice, setAiAdvice] = useState('')
@@ -103,33 +108,63 @@ export default function BlackjackGame() {
     if (gameState.gameStatus !== 'playing') return
 
     const newCard = drawCard()
-    const newPlayerHand = [...gameState.playerHand, newCard]
-    const newPlayerScore = calculateHandValue(newPlayerHand)
-
-    if (newPlayerScore > 21) {
-      // Player busts
-      setGameState({
-        ...gameState,
-        playerHand: newPlayerHand,
-        playerScore: newPlayerScore,
-        gameStatus: 'finished',
-        result: 'lose',
-        canHit: false,
-        canStand: false,
-        canDouble: false,
-        canSplit: false
-      })
-      setTimeout(() => finishGame(newPlayerHand, gameState.dealerHand), 1000)
-    } else {
+    
+    if (gameState.isSplit && gameState.activeSplitHand === 'first') {
+      // Hitting on first split hand
+      const newPlayerHand = [...gameState.playerHand, newCard]
+      const newPlayerScore = calculateHandValue(newPlayerHand)
+      
       setGameState({
         ...gameState,
         playerHand: newPlayerHand,
         playerScore: newPlayerScore,
         canHit: newPlayerScore < 21,
         canStand: true,
-        canDouble: false, // Can't double after hitting
-        canSplit: false // Can't split after hitting
+        canDouble: false,
+        canSplit: false
       })
+    } else if (gameState.isSplit && gameState.activeSplitHand === 'second' && gameState.splitHand) {
+      // Hitting on second split hand
+      const newSplitHand = [...gameState.splitHand, newCard]
+      const newSplitScore = calculateHandValue(newSplitHand)
+      
+      setGameState({
+        ...gameState,
+        splitHand: newSplitHand,
+        splitScore: newSplitScore,
+        canHit: newSplitScore < 21,
+        canStand: true
+      })
+    } else {
+      // Regular hit (no split)
+      const newPlayerHand = [...gameState.playerHand, newCard]
+      const newPlayerScore = calculateHandValue(newPlayerHand)
+
+      if (newPlayerScore > 21) {
+        // Player busts
+        setGameState({
+          ...gameState,
+          playerHand: newPlayerHand,
+          playerScore: newPlayerScore,
+          gameStatus: 'finished',
+          result: 'lose',
+          canHit: false,
+          canStand: false,
+          canDouble: false,
+          canSplit: false
+        })
+        setTimeout(() => finishGame(newPlayerHand, gameState.dealerHand), 1000)
+      } else {
+        setGameState({
+          ...gameState,
+          playerHand: newPlayerHand,
+          playerScore: newPlayerScore,
+          canHit: newPlayerScore < 21,
+          canStand: true,
+          canDouble: false, // Can't double after hitting
+          canSplit: false // Can't split after hitting
+        })
+      }
     }
   }
 
@@ -164,26 +199,65 @@ export default function BlackjackGame() {
   const splitHand = () => {
     if (gameState.gameStatus !== 'playing' || !gameState.canSplit) return
     
-    toast.info('Split feature coming soon! For now, you can Hit or Stand.')
-    // TODO: Implement split logic with two separate hands
+    // Split the hand
+    const firstHand = [gameState.playerHand[0], drawCard()]
+    const secondHand = [gameState.playerHand[1]]
+    
+    setGameState({
+      ...gameState,
+      playerHand: firstHand,
+      splitHand: secondHand,
+      playerScore: calculateHandValue(firstHand),
+      splitScore: calculateHandValue(secondHand),
+      currentBet: gameState.currentBet * 2,
+      chips: gameState.chips - gameState.currentBet, // Deduct additional bet
+      isSplit: true,
+      activeSplitHand: 'first',
+      canHit: true,
+      canStand: true,
+      canDouble: false,
+      canSplit: false
+    })
+    
+    toast.success('Hand split! Playing first hand...')
   }
 
   const stand = () => {
     if (gameState.gameStatus !== 'playing') return
 
-    setGameState({
-      ...gameState,
-      gameStatus: 'dealer-turn',
-      canHit: false,
-      canStand: false,
-      canDouble: false,
-      canSplit: false,
-      showDealerCard: true,
-      dealerScore: calculateHandValue(gameState.dealerHand)
-    })
+    if (gameState.isSplit && gameState.activeSplitHand === 'first' && gameState.splitHand) {
+      // Finished first hand, move to second hand
+      const newSplitHand = [...gameState.splitHand, drawCard()]
+      
+      setGameState({
+        ...gameState,
+        splitHand: newSplitHand,
+        splitScore: calculateHandValue(newSplitHand),
+        activeSplitHand: 'second',
+        canHit: true,
+        canStand: true,
+        canDouble: false,
+        canSplit: false
+      })
+      
+      toast.info('Now playing second hand...')
+    } else {
+      // Either not split, or finished second hand - go to dealer
+      setGameState({
+        ...gameState,
+        gameStatus: 'dealer-turn',
+        canHit: false,
+        canStand: false,
+        canDouble: false,
+        canSplit: false,
+        showDealerCard: true,
+        dealerScore: calculateHandValue(gameState.dealerHand),
+        activeSplitHand: null
+      })
 
-    // Dealer plays
-    setTimeout(() => playDealerTurn(), 1000)
+      // Dealer plays
+      setTimeout(() => playDealerTurn(), 1000)
+    }
   }
 
   const playDealerTurn = () => {
@@ -211,19 +285,55 @@ export default function BlackjackGame() {
   }
 
   const finishGame = async (playerHand: Card[], dealerHand: Card[]) => {
-    const result = determineResult(playerHand, dealerHand)
-    const isPlayerBlackjack = isBlackjack(playerHand)
-    const payout = calculatePayout(gameState.currentBet, result, isPlayerBlackjack)
-    const newChips = gameState.chips + gameState.currentBet + payout
-
-    setGameState(prev => ({
-      ...prev,
-      gameStatus: 'finished',
-      result,
-      chips: newChips,
-      showDealerCard: true,
-      dealerScore: calculateHandValue(dealerHand)
-    }))
+    let result: 'win' | 'lose' | 'push'
+    let payout: number
+    let newChips: number
+    
+    if (gameState.isSplit && gameState.splitHand) {
+      // Calculate results for both hands
+      const firstResult = determineResult(playerHand, dealerHand)
+      const secondResult = determineResult(gameState.splitHand, dealerHand)
+      
+      const firstPayout = calculatePayout(gameState.currentBet / 2, firstResult, false)
+      const secondPayout = calculatePayout(gameState.currentBet / 2, secondResult, false)
+      
+      payout = firstPayout + secondPayout
+      newChips = gameState.chips + gameState.currentBet + payout
+      
+      // Overall result (for display)
+      if (firstResult === 'win' && secondResult === 'win') {
+        result = 'win'
+      } else if (firstResult === 'lose' && secondResult === 'lose') {
+        result = 'lose'
+      } else {
+        result = 'push'
+      }
+      
+      setGameState(prev => ({
+        ...prev,
+        gameStatus: 'finished',
+        result,
+        chips: newChips,
+        showDealerCard: true,
+        dealerScore: calculateHandValue(dealerHand),
+        splitResults: { first: firstResult, second: secondResult }
+      }))
+    } else {
+      // Regular game (no split)
+      result = determineResult(playerHand, dealerHand)
+      const isPlayerBlackjack = isBlackjack(playerHand)
+      payout = calculatePayout(gameState.currentBet, result, isPlayerBlackjack)
+      newChips = gameState.chips + gameState.currentBet + payout
+      
+      setGameState(prev => ({
+        ...prev,
+        gameStatus: 'finished',
+        result,
+        chips: newChips,
+        showDealerCard: true,
+        dealerScore: calculateHandValue(dealerHand)
+      }))
+    }
 
     // Update chips in database
     if (gameUser) {
@@ -273,7 +383,12 @@ export default function BlackjackGame() {
       canDouble: false,
       canSplit: false,
       showDealerCard: false,
-      hasDoubled: false
+      hasDoubled: false,
+      isSplit: false,
+      splitHand: null,
+      splitScore: 0,
+      activeSplitHand: null,
+      splitResults: { first: null, second: null }
     })
     setAiAdvice('')
   }
@@ -366,28 +481,60 @@ export default function BlackjackGame() {
           </div>
         </div>
 
-        {/* Player Hand */}
+        {/* Player Hand(s) */}
         <div className="mb-6 sm:mb-8 text-center">
-          <div className="bg-gray-900 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg inline-block mb-2 sm:mb-4 border border-gray-700 text-sm sm:text-base">
-            {gameState.playerScore} You
-          </div>
-          <div className="flex gap-2 sm:gap-3 justify-center min-h-[80px] sm:min-h-[140px]">
-            {gameState.playerHand.length > 0 ? (
-              gameState.playerHand.map((card, index) => (
-                <PlayingCard
-                  key={index}
-                  card={card}
-                  delay={index * 200}
-                />
-              ))
-            ) : (
-              // Show placeholder cards when no cards dealt
-              <>
-                <PlaceholderCard />
-                <PlaceholderCard />
-              </>
-            )}
-          </div>
+          {gameState.isSplit ? (
+            // Split hands display
+            <div className="flex gap-4 sm:gap-8 justify-center flex-wrap">
+              {/* First Hand */}
+              <div className={`transition-opacity ${gameState.activeSplitHand === 'second' ? 'opacity-50' : ''}`}>
+                <div className={`bg-gray-900 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg inline-block mb-2 sm:mb-4 border text-sm sm:text-base ${gameState.activeSplitHand === 'first' ? 'border-blue-500' : 'border-gray-700'}`}>
+                  {gameState.playerScore} Hand 1 {gameState.activeSplitHand === 'first' && '⬅️'}
+                </div>
+                <div className="flex gap-2 justify-center">
+                  {gameState.playerHand.map((card, index) => (
+                    <PlayingCard key={index} card={card} delay={0} />
+                  ))}
+                </div>
+              </div>
+              
+              {/* Second Hand */}
+              <div className={`transition-opacity ${gameState.activeSplitHand === 'first' ? 'opacity-50' : ''}`}>
+                <div className={`bg-gray-900 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg inline-block mb-2 sm:mb-4 border text-sm sm:text-base ${gameState.activeSplitHand === 'second' ? 'border-blue-500' : 'border-gray-700'}`}>
+                  {gameState.splitScore} Hand 2 {gameState.activeSplitHand === 'second' && '⬅️'}
+                </div>
+                <div className="flex gap-2 justify-center">
+                  {gameState.splitHand && gameState.splitHand.map((card, index) => (
+                    <PlayingCard key={index} card={card} delay={0} />
+                  ))}
+                </div>
+              </div>
+            </div>
+          ) : (
+            // Regular single hand display
+            <>
+              <div className="bg-gray-900 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg inline-block mb-2 sm:mb-4 border border-gray-700 text-sm sm:text-base">
+                {gameState.playerScore} You
+              </div>
+              <div className="flex gap-2 sm:gap-3 justify-center min-h-[80px] sm:min-h-[140px]">
+                {gameState.playerHand.length > 0 ? (
+                  gameState.playerHand.map((card, index) => (
+                    <PlayingCard
+                      key={index}
+                      card={card}
+                      delay={index * 200}
+                    />
+                  ))
+                ) : (
+                  // Show placeholder cards when no cards dealt
+                  <>
+                    <PlaceholderCard />
+                    <PlaceholderCard />
+                  </>
+                )}
+              </div>
+            </>
+          )}
         </div>
 
         {/* Game Controls */}

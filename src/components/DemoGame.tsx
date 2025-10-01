@@ -32,7 +32,12 @@ export default function DemoGame() {
     canDouble: false,
     canSplit: false,
     showDealerCard: false,
-    hasDoubled: false
+    hasDoubled: false,
+    isSplit: false,
+    splitHand: null,
+    splitScore: 0,
+    activeSplitHand: null,
+    splitResults: { first: null, second: null }
   })
   const [betAmount, setBetAmount] = useState('')
   const [gamesPlayed, setGamesPlayed] = useState(0)
@@ -207,7 +212,12 @@ export default function DemoGame() {
       canDouble: false,
       canSplit: false,
       showDealerCard: false,
-      hasDoubled: false
+      hasDoubled: false,
+      isSplit: false,
+      splitHand: null,
+      splitScore: 0,
+      activeSplitHand: null,
+      splitResults: { first: null, second: null }
     })
   }
 
