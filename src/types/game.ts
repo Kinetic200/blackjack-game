@@ -18,7 +18,10 @@ export interface GameState {
   chips: number
   canHit: boolean
   canStand: boolean
+  canDouble: boolean
+  canSplit: boolean
   showDealerCard: boolean
+  hasDoubled: boolean
 }
 
 export interface GameHistory {

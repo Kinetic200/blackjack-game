@@ -8,7 +8,9 @@ import {
   determineResult, 
   calculatePayout, 
   shouldDealerHit,
-  isBlackjack 
+  isBlackjack,
+  canDoubleDown,
+  canSplit
 } from '@/lib/gameLogic'
 import { useAuth } from '@/contexts/AuthContext'
 import { supabase } from '@/lib/supabase'
@@ -33,7 +35,10 @@ export default function BlackjackGame() {
     chips: gameUser?.chips || 0,
     canHit: false,
     canStand: false,
-    showDealerCard: false
+    canDouble: false,
+    canSplit: false,
+    showDealerCard: false,
+    hasDoubled: false
   })
   const [betAmount, setBetAmount] = useState('')
   const [aiAdvice, setAiAdvice] = useState('')
@@ -66,6 +71,8 @@ export default function BlackjackGame() {
     const dealerHand = [dealerCard1, dealerCard2]
     const playerScore = calculateHandValue(playerHand)
 
+    const newChips = gameState.chips - bet
+    
     setGameState({
       ...gameState,
       playerHand,
@@ -74,10 +81,13 @@ export default function BlackjackGame() {
       dealerScore: calculateHandValue([dealerCard1]), // Only show first dealer card
       gameStatus: isBlackjack(playerHand) ? 'finished' : 'playing',
       currentBet: bet,
-      chips: gameState.chips - bet,
+      chips: newChips,
       canHit: !isBlackjack(playerHand),
       canStand: true,
+      canDouble: canDoubleDown(playerHand, newChips, bet),
+      canSplit: canSplit(playerHand, newChips, bet),
       showDealerCard: false,
+      hasDoubled: false,
       result: isBlackjack(playerHand) && !isBlackjack(dealerHand) ? 'win' : null
     })
 
@@ -105,7 +115,9 @@ export default function BlackjackGame() {
         gameStatus: 'finished',
         result: 'lose',
         canHit: false,
-        canStand: false
+        canStand: false,
+        canDouble: false,
+        canSplit: false
       })
       setTimeout(() => finishGame(newPlayerHand, gameState.dealerHand), 1000)
     } else {
@@ -114,9 +126,46 @@ export default function BlackjackGame() {
         playerHand: newPlayerHand,
         playerScore: newPlayerScore,
         canHit: newPlayerScore < 21,
-        canStand: true
+        canStand: true,
+        canDouble: false, // Can't double after hitting
+        canSplit: false // Can't split after hitting
       })
     }
+  }
+
+  const doubleDown = () => {
+    if (gameState.gameStatus !== 'playing' || !gameState.canDouble) return
+    
+    // Double the bet and deduct from chips
+    const newCard = drawCard()
+    const newPlayerHand = [...gameState.playerHand, newCard]
+    const newPlayerScore = calculateHandValue(newPlayerHand)
+    
+    setGameState({
+      ...gameState,
+      playerHand: newPlayerHand,
+      playerScore: newPlayerScore,
+      currentBet: gameState.currentBet * 2,
+      chips: gameState.chips - gameState.currentBet,
+      gameStatus: 'dealer-turn',
+      canHit: false,
+      canStand: false,
+      canDouble: false,
+      canSplit: false,
+      showDealerCard: true,
+      dealerScore: calculateHandValue(gameState.dealerHand),
+      hasDoubled: true
+    })
+    
+    // Dealer plays automatically
+    setTimeout(() => playDealerTurn(), 1000)
+  }
+
+  const splitHand = () => {
+    if (gameState.gameStatus !== 'playing' || !gameState.canSplit) return
+    
+    toast.info('Split feature coming soon! For now, you can Hit or Stand.')
+    // TODO: Implement split logic with two separate hands
   }
 
   const stand = () => {
@@ -127,6 +176,8 @@ export default function BlackjackGame() {
       gameStatus: 'dealer-turn',
       canHit: false,
       canStand: false,
+      canDouble: false,
+      canSplit: false,
       showDealerCard: true,
       dealerScore: calculateHandValue(gameState.dealerHand)
     })
@@ -399,12 +450,12 @@ export default function BlackjackGame() {
 
           {gameState.gameStatus === 'playing' && (
             <div className="space-y-3 sm:space-y-4">
-              <div className="flex gap-3 sm:gap-4 justify-center">
+              <div className="flex gap-2 sm:gap-3 justify-center flex-wrap">
                 <Button 
                   onClick={hit} 
                   disabled={!gameState.canHit} 
                   size="lg"
-                  className="bg-red-600 hover:bg-red-700 text-white w-28 sm:w-36 py-4 sm:py-6 text-base sm:text-lg font-bold"
+                  className="bg-red-600 hover:bg-red-700 text-white w-24 sm:w-32 py-4 sm:py-6 text-sm sm:text-base font-bold disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Hit
                 </Button>
@@ -412,9 +463,25 @@ export default function BlackjackGame() {
                   onClick={stand} 
                   disabled={!gameState.canStand} 
                   size="lg"
-                  className="bg-gray-700 hover:bg-gray-600 text-white w-28 sm:w-36 py-4 sm:py-6 text-base sm:text-lg font-bold"
+                  className="bg-gray-700 hover:bg-gray-600 text-white w-24 sm:w-32 py-4 sm:py-6 text-sm sm:text-base font-bold disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Stand
+                </Button>
+                <Button 
+                  onClick={doubleDown} 
+                  disabled={!gameState.canDouble} 
+                  size="lg"
+                  className="bg-blue-600 hover:bg-blue-700 text-white w-24 sm:w-32 py-4 sm:py-6 text-sm sm:text-base font-bold disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Double
+                </Button>
+                <Button 
+                  onClick={splitHand} 
+                  disabled={!gameState.canSplit} 
+                  size="lg"
+                  className="bg-yellow-600 hover:bg-yellow-700 text-white w-24 sm:w-32 py-4 sm:py-6 text-sm sm:text-base font-bold disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Split
                 </Button>
               </div>
               <Dialog>

@@ -128,3 +128,13 @@ export function calculatePayout(
 export function shouldDealerHit(hand: Card[]): boolean {
   return calculateHandValue(hand) < 17
 }
+
+// Check if player can double down (only on first two cards)
+export function canDoubleDown(hand: Card[], chips: number, currentBet: number): boolean {
+  return hand.length === 2 && chips >= currentBet
+}
+
+// Check if player can split (two cards of same rank)
+export function canSplit(hand: Card[], chips: number, currentBet: number): boolean {
+  return hand.length === 2 && hand[0].rank === hand[1].rank && chips >= currentBet
+}
