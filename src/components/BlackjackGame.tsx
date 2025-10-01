@@ -396,7 +396,7 @@ export default function BlackjackGame() {
     } else if (isSplit && splitHand) {
       // Calculate results for both hands
       const firstResult = determineResult(playerHand, dealerHand)
-      const secondResult = determineResult(gameState.splitHand, dealerHand)
+      const secondResult = determineResult(splitHand, dealerHand)
       
       const halfBet = betAmount / 2
       const firstPayout = calculatePayout(halfBet, firstResult, false)
