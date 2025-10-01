@@ -222,25 +222,51 @@ export default function BlackjackGame() {
     const newCard = drawCard()
     const newPlayerHand = [...gameState.playerHand, newCard]
     const newPlayerScore = calculateHandValue(newPlayerHand)
+    const originalBet = gameState.currentBet
     
-    setGameState({
-      ...gameState,
-      playerHand: newPlayerHand,
-      playerScore: newPlayerScore,
-      currentBet: gameState.currentBet * 2,
-      chips: gameState.chips - gameState.currentBet,
-      gameStatus: 'dealer-turn',
-      canHit: false,
-      canStand: false,
-      canDouble: false,
-      canSplit: false,
-      showDealerCard: true,
-      dealerScore: calculateHandValue(gameState.dealerHand),
-      hasDoubled: true
-    })
-    
-    // Dealer plays automatically
-    setTimeout(() => playDealerTurn(), 1000)
+    // Check if player busts on double down
+    if (newPlayerScore > 21) {
+      // Player busts - immediate loss, dealer doesn't play
+      setGameState({
+        ...gameState,
+        playerHand: newPlayerHand,
+        playerScore: newPlayerScore,
+        currentBet: originalBet * 2,
+        chips: gameState.chips - originalBet, // Deduct second bet
+        gameStatus: 'finished',
+        result: 'lose',
+        canHit: false,
+        canStand: false,
+        canDouble: false,
+        canSplit: false,
+        showDealerCard: true,
+        dealerScore: calculateHandValue(gameState.dealerHand),
+        hasDoubled: true
+      })
+      
+      toast.error('Bust! You lose.')
+      setTimeout(() => finishGame(newPlayerHand, gameState.dealerHand), 1000)
+    } else {
+      // Continue to dealer turn
+      setGameState({
+        ...gameState,
+        playerHand: newPlayerHand,
+        playerScore: newPlayerScore,
+        currentBet: originalBet * 2,
+        chips: gameState.chips - originalBet,
+        gameStatus: 'dealer-turn',
+        canHit: false,
+        canStand: false,
+        canDouble: false,
+        canSplit: false,
+        showDealerCard: true,
+        dealerScore: calculateHandValue(gameState.dealerHand),
+        hasDoubled: true
+      })
+      
+      // Dealer plays automatically
+      setTimeout(() => playDealerTurn(), 1000)
+    }
   }
 
   const splitHand = () => {
