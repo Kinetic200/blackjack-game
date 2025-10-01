@@ -466,15 +466,48 @@ export default function BlackjackGame() {
       ])
     }
 
-    // Show result toast
-    const resultMessages: Record<'win' | 'lose' | 'push', string> = {
-      win: gameState.isSplit ? 'Results in!' : (isBlackjack(playerHand) ? 'Blackjack! You win!' : 'You win!'),
-      lose: 'You lose!',
-      push: 'Push! It\'s a tie!'
+    // Show result toast with detailed explanation
+    let resultMessage = ''
+    const playerScore = calculateHandValue(playerHand)
+    const dealerScore = calculateHandValue(dealerHand)
+    const playerHasBlackjack = isBlackjack(playerHand)
+    const dealerHasBlackjack = isBlackjack(dealerHand)
+    
+    if (gameState.isSplit) {
+      resultMessage = result === 'win' ? 'You win both hands!' : result === 'lose' ? 'You lose both hands!' : 'Mixed results!'
+    } else if (result === 'win') {
+      if (playerHasBlackjack) {
+        resultMessage = 'Blackjack! You win 3:2!'
+      } else if (dealerScore > 21) {
+        resultMessage = `Dealer busts with ${dealerScore}! You win!`
+      } else {
+        resultMessage = `You win! (${playerScore} vs ${dealerScore})`
+      }
+    } else if (result === 'lose') {
+      if (playerScore > 21) {
+        resultMessage = `Bust! You have ${playerScore}`
+      } else if (dealerHasBlackjack && !playerHasBlackjack) {
+        resultMessage = `Dealer Blackjack beats your ${playerScore}`
+      } else {
+        resultMessage = `You lose (${playerScore} vs ${dealerScore})`
+      }
+    } else {
+      // Push
+      if (playerHasBlackjack && dealerHasBlackjack) {
+        resultMessage = 'Push! Both have Blackjack'
+      } else {
+        resultMessage = `Push! Both have ${playerScore}`
+      }
     }
     
     setTimeout(() => {
-      toast.success(resultMessages[result])
+      if (result === 'win') {
+        toast.success(resultMessage)
+      } else if (result === 'lose') {
+        toast.error(resultMessage)
+      } else {
+        toast.info(resultMessage)
+      }
     }, 500)
   }
 
