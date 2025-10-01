@@ -245,7 +245,8 @@ export default function BlackjackGame() {
       })
       
       toast.error('Bust! You lose.')
-      setTimeout(() => finishGame(newPlayerHand, gameState.dealerHand, originalBet * 2), 1000)
+      const chipsAfterDouble = gameState.chips - originalBet
+      setTimeout(() => finishGame(newPlayerHand, gameState.dealerHand, originalBet * 2, chipsAfterDouble), 1000)
     } else {
       // Continue to dealer turn
       setGameState({
@@ -264,8 +265,9 @@ export default function BlackjackGame() {
         hasDoubled: true
       })
       
-      // Dealer plays automatically (need to pass doubled bet through)
-      setTimeout(() => playDealerTurn(originalBet * 2), 1000)
+      // Dealer plays automatically (need to pass doubled bet and chips through)
+      const chipsAfterDouble = gameState.chips - originalBet
+      setTimeout(() => playDealerTurn(originalBet * 2, chipsAfterDouble), 1000)
     }
   }
 
@@ -333,7 +335,7 @@ export default function BlackjackGame() {
     }
   }
 
-  const playDealerTurn = (actualBet?: number) => {
+  const playDealerTurn = (actualBet?: number, actualChips?: number) => {
     let dealerHand = [...gameState.dealerHand]
     
     const dealerTurn = () => {
@@ -349,17 +351,19 @@ export default function BlackjackGame() {
 
         setTimeout(dealerTurn, 1000)
       } else {
-        // Dealer is done - pass the actual bet if provided (for double down)
-        setTimeout(() => finishGame(gameState.playerHand, dealerHand, actualBet), 1000)
+        // Dealer is done - pass the actual bet and chips if provided (for double down)
+        setTimeout(() => finishGame(gameState.playerHand, dealerHand, actualBet, actualChips), 1000)
       }
     }
 
     dealerTurn()
   }
 
-  const finishGame = async (playerHand: Card[], dealerHand: Card[], actualBet?: number) => {
+  const finishGame = async (playerHand: Card[], dealerHand: Card[], actualBet?: number, actualChips?: number) => {
     // Use passed bet or current bet from state
     const betAmount = actualBet || gameState.currentBet
+    // Use passed chips or current chips from state (for double down, chips are already deducted)
+    const currentChips = actualChips ?? gameState.chips
     let result: 'win' | 'lose' | 'push'
     let payout: number
     let newChips: number
@@ -371,7 +375,7 @@ export default function BlackjackGame() {
       // Player busted in regular game - immediate loss
       result = 'lose'
       payout = calculatePayout(betAmount, result, false)
-      newChips = gameState.chips + betAmount + payout
+      newChips = currentChips + betAmount + payout
     } else if (gameState.isSplit && gameState.splitHand) {
       // Calculate results for both hands
       const firstResult = determineResult(playerHand, dealerHand)
@@ -381,7 +385,7 @@ export default function BlackjackGame() {
       const secondPayout = calculatePayout(betAmount / 2, secondResult, false)
       
       payout = firstPayout + secondPayout
-      newChips = gameState.chips + betAmount + payout
+      newChips = currentChips + betAmount + payout
       
       // Overall result (for display)
       if (firstResult === 'win' && secondResult === 'win') {
@@ -411,10 +415,11 @@ export default function BlackjackGame() {
       // For win: chips + bet + bet = chips + 2*bet
       // For loss: chips + bet + (-bet) = chips (you lose your bet)
       // For push: chips + bet + 0 = chips + bet (get bet back)
-      newChips = gameState.chips + betAmount + payout
+      newChips = currentChips + betAmount + payout
       
       console.log('💰 Payout calculation:')
-      console.log('   Current chips:', gameState.chips)
+      console.log('   Current chips (from state):', gameState.chips)
+      console.log('   Current chips (passed/actual):', currentChips)
       console.log('   Actual bet (passed):', betAmount)
       console.log('   State current bet:', gameState.currentBet)
       console.log('   Result:', result)
