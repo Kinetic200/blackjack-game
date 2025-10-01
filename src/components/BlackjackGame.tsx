@@ -382,8 +382,8 @@ export default function BlackjackGame() {
         hasDoubled: true
       })
       
-      // Dealer plays automatically (need to pass doubled bet and chips through)
-      setTimeout(() => playDealerTurn(originalBet * 2, chipsAfterDouble), 1000)
+      // Dealer plays automatically (pass doubled bet, chips, and the updated player hand)
+      setTimeout(() => playDealerTurn(originalBet * 2, chipsAfterDouble, newPlayerHand, null), 1000)
     }
   }
 
