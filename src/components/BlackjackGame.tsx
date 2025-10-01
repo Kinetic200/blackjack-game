@@ -167,7 +167,11 @@ export default function BlackjackGame() {
           dealerScore: calculateHandValue(gameState.dealerHand),
           activeSplitHand: null
         })
-        setTimeout(() => playDealerTurn(), 1000)
+        // Pass the busted hand directly to ensure correct calculation
+        setTimeout(() => {
+          console.log('🚨 Hand 2 busted, calling playDealerTurn with busted hand:', newSplitHand)
+          playDealerTurn(gameState.currentBet, gameState.chips, gameState.playerHand, newSplitHand)
+        }, 1000)
       } else {
         setGameState({
           ...gameState,
@@ -445,7 +449,7 @@ export default function BlackjackGame() {
     }
   }
 
-  const playDealerTurn = (actualBet?: number, actualChips?: number) => {
+  const playDealerTurn = (actualBet?: number, actualChips?: number, finalPlayerHand?: Card[], finalSplitHand?: Card[] | null) => {
     let dealerHand = [...gameState.dealerHand]
     
     const dealerTurn = () => {
@@ -462,8 +466,10 @@ export default function BlackjackGame() {
         setTimeout(dealerTurn, 1000)
       } else {
         // Dealer is done - pass the actual bet, chips, and split info
-        // Don't pass hands - let finishGame use current state to ensure we have the final hands
-        setTimeout(() => finishGame([], dealerHand, actualBet, actualChips, true, null), 1000)
+        // Use passed hands if available, otherwise use current state
+        const playerHandToUse = finalPlayerHand && finalPlayerHand.length > 0 ? finalPlayerHand : gameState.playerHand
+        const splitHandToUse = finalSplitHand !== undefined ? finalSplitHand : gameState.splitHand
+        setTimeout(() => finishGame(playerHandToUse, dealerHand, actualBet, actualChips, true, splitHandToUse), 1000)
       }
     }
 
@@ -477,9 +483,9 @@ export default function BlackjackGame() {
     const currentChips = actualChips ?? gameState.chips
     // Check if this is a split game (passed or from state)
     const isSplit = isSplitGame ?? gameState.isSplit
-    // Use current state hands if empty arrays are passed (ensures we have final hands)
+    // Use passed hands if provided, otherwise use current state hands
     const finalPlayerHand = playerHand.length > 0 ? playerHand : gameState.playerHand
-    const finalSplitHand = splitHandCards !== null ? (splitHandCards ?? gameState.splitHand) : gameState.splitHand
+    const finalSplitHand = splitHandCards !== null ? splitHandCards : gameState.splitHand
     
     let result: 'win' | 'lose' | 'push'
     let payout: number
