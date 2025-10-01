@@ -462,7 +462,8 @@ export default function BlackjackGame() {
         setTimeout(dealerTurn, 1000)
       } else {
         // Dealer is done - pass the actual bet, chips, and split info
-        setTimeout(() => finishGame(gameState.playerHand, dealerHand, actualBet, actualChips, gameState.isSplit, gameState.splitHand), 1000)
+        // Don't pass hands - let finishGame use current state to ensure we have the final hands
+        setTimeout(() => finishGame([], dealerHand, actualBet, actualChips, true, null), 1000)
       }
     }
 
@@ -476,7 +477,9 @@ export default function BlackjackGame() {
     const currentChips = actualChips ?? gameState.chips
     // Check if this is a split game (passed or from state)
     const isSplit = isSplitGame ?? gameState.isSplit
-    const splitHand = splitHandCards ?? gameState.splitHand
+    // Use current state hands if empty arrays are passed (ensures we have final hands)
+    const finalPlayerHand = playerHand.length > 0 ? playerHand : gameState.playerHand
+    const finalSplitHand = splitHandCards !== null ? (splitHandCards ?? gameState.splitHand) : gameState.splitHand
     
     let result: 'win' | 'lose' | 'push'
     let payout: number
@@ -484,21 +487,21 @@ export default function BlackjackGame() {
     
     console.log('🎮 finishGame called with:')
     console.log('   isSplit:', isSplit)
-    console.log('   splitHand:', splitHand)
+    console.log('   finalSplitHand:', finalSplitHand)
     console.log('   betAmount:', betAmount)
     
     // Check if player already busted (shouldn't calculate dealer result)
-    const playerBusted = calculateHandValue(playerHand) > 21
+    const playerBusted = calculateHandValue(finalPlayerHand) > 21
     
     if (playerBusted && !isSplit) {
       // Player busted in regular game - immediate loss
       result = 'lose'
       payout = calculatePayout(betAmount, result, false)
       newChips = currentChips + betAmount + payout
-    } else if (isSplit && splitHand) {
+    } else if (isSplit && finalSplitHand) {
       // Calculate results for both hands
-      const firstResult = determineResult(playerHand, dealerHand)
-      const secondResult = determineResult(splitHand, dealerHand)
+      const firstResult = determineResult(finalPlayerHand, dealerHand)
+      const secondResult = determineResult(finalSplitHand, dealerHand)
       
       // Calculate actual bet for each hand (accounting for doubles)
       const baseBet = betAmount / (gameState.splitDoubled.first && gameState.splitDoubled.second ? 4 : 
@@ -542,8 +545,8 @@ export default function BlackjackGame() {
       }))
     } else {
       // Regular game (no split)
-      result = determineResult(playerHand, dealerHand)
-      const isPlayerBlackjack = isBlackjack(playerHand)
+      result = determineResult(finalPlayerHand, dealerHand)
+      const isPlayerBlackjack = isBlackjack(finalPlayerHand)
       payout = calculatePayout(betAmount, result, isPlayerBlackjack)
       
       // Calculate final chips: current chips + bet back + winnings/losses
@@ -583,9 +586,9 @@ export default function BlackjackGame() {
         {
           user_id: gameUser.id,
           bet_amount: gameState.currentBet,
-          player_hand: JSON.stringify(playerHand),
+          player_hand: JSON.stringify(finalPlayerHand),
           dealer_hand: JSON.stringify(dealerHand),
-          player_score: calculateHandValue(playerHand),
+          player_score: calculateHandValue(finalPlayerHand),
           dealer_score: calculateHandValue(dealerHand),
           result,
           chips_change: payout
@@ -595,9 +598,9 @@ export default function BlackjackGame() {
 
     // Show result toast with detailed explanation
     let resultMessage = ''
-    const playerScore = calculateHandValue(playerHand)
+    const playerScore = calculateHandValue(finalPlayerHand)
     const dealerScore = calculateHandValue(dealerHand)
-    const playerHasBlackjack = isBlackjack(playerHand)
+    const playerHasBlackjack = isBlackjack(finalPlayerHand)
     const dealerHasBlackjack = isBlackjack(dealerHand)
     
     if (gameState.isSplit) {
