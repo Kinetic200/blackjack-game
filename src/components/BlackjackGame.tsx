@@ -224,6 +224,9 @@ export default function BlackjackGame() {
     const newPlayerScore = calculateHandValue(newPlayerHand)
     const originalBet = gameState.currentBet
     
+    // Calculate chips AFTER double deduction (BEFORE setState to avoid async issues)
+    const chipsAfterDouble = gameState.chips - originalBet
+    
     // Check if player busts on double down
     if (newPlayerScore > 21) {
       // Player busts - immediate loss, dealer doesn't play
@@ -232,7 +235,7 @@ export default function BlackjackGame() {
         playerHand: newPlayerHand,
         playerScore: newPlayerScore,
         currentBet: originalBet * 2,
-        chips: gameState.chips - originalBet, // Deduct second bet
+        chips: chipsAfterDouble,
         gameStatus: 'finished',
         result: 'lose',
         canHit: false,
@@ -245,7 +248,6 @@ export default function BlackjackGame() {
       })
       
       toast.error('Bust! You lose.')
-      const chipsAfterDouble = gameState.chips - originalBet
       setTimeout(() => finishGame(newPlayerHand, gameState.dealerHand, originalBet * 2, chipsAfterDouble), 1000)
     } else {
       // Continue to dealer turn
@@ -254,7 +256,7 @@ export default function BlackjackGame() {
         playerHand: newPlayerHand,
         playerScore: newPlayerScore,
         currentBet: originalBet * 2,
-        chips: gameState.chips - originalBet,
+        chips: chipsAfterDouble,
         gameStatus: 'dealer-turn',
         canHit: false,
         canStand: false,
@@ -266,7 +268,6 @@ export default function BlackjackGame() {
       })
       
       // Dealer plays automatically (need to pass doubled bet and chips through)
-      const chipsAfterDouble = gameState.chips - originalBet
       setTimeout(() => playDealerTurn(originalBet * 2, chipsAfterDouble), 1000)
     }
   }
