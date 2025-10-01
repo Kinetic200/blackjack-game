@@ -482,18 +482,15 @@ export default function BlackjackGame() {
         {/* Header with chips */}
         <div className="flex justify-between items-center mb-4 sm:mb-8 px-2 sm:px-4">
           <h1 className="text-white text-xl sm:text-2xl font-bold">Blackjack</h1>
-          <div className="flex items-center gap-2">
-            <div className="flex items-center gap-2 bg-gray-900 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg border border-gray-700">
-              <span className="text-yellow-400 text-sm sm:text-base">💰</span>
-              <span className="text-white font-semibold text-sm sm:text-base">{gameState.chips}</span>
-            </div>
-            <Button 
+          <div className="flex items-center gap-2 bg-gray-900 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg border border-gray-700">
+            <span className="text-yellow-400 text-sm sm:text-base">💰</span>
+            <span className="text-white font-semibold text-sm sm:text-base">{gameState.chips}</span>
+            <button 
               onClick={buyChips}
-              size="sm"
-              className="bg-gray-900 hover:bg-gray-800 text-white border border-gray-700 w-8 h-8 p-0 rounded-lg"
+              className="ml-1 text-white hover:text-gray-300 transition-colors text-lg font-bold"
             >
               +
-            </Button>
+            </button>
           </div>
         </div>
 
@@ -594,17 +591,6 @@ export default function BlackjackGame() {
                   <Button 
                     onClick={() => {
                       const current = parseInt(betAmount) || 0
-                      const newAmount = Math.min(current + 5, gameState.chips)
-                      setBetAmount(newAmount.toString())
-                    }} 
-                    variant="outline" 
-                    className="bg-black border-gray-700 text-white hover:bg-gray-900 text-sm sm:text-base w-20 sm:w-24 py-3 font-semibold"
-                  >
-                    +5
-                  </Button>
-                  <Button 
-                    onClick={() => {
-                      const current = parseInt(betAmount) || 0
                       const newAmount = Math.min(current + 25, gameState.chips)
                       setBetAmount(newAmount.toString())
                     }} 
@@ -623,6 +609,13 @@ export default function BlackjackGame() {
                     className="bg-black border-gray-700 text-white hover:bg-gray-900 text-sm sm:text-base w-20 sm:w-24 py-3 font-semibold"
                   >
                     +100
+                  </Button>
+                  <Button 
+                    onClick={() => setBetAmount(gameState.chips.toString())} 
+                    variant="outline" 
+                    className="bg-red-600 border-red-700 text-white hover:bg-red-700 text-sm sm:text-base w-20 sm:w-24 py-3 font-semibold"
+                  >
+                    All In
                   </Button>
                   <Button 
                     onClick={() => setBetAmount('0')} 
