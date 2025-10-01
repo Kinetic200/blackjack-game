@@ -5,19 +5,15 @@ const nextConfig: NextConfig = {
   headers: async () => {
     return [
       {
-        source: '/:path*',
+        source: '/(.*)',
         headers: [
           {
             key: 'Cache-Control',
-            value: 'no-cache, no-store, must-revalidate',
+            value: 'public, max-age=0, must-revalidate',
           },
         ],
       },
     ]
-  },
-  // Generate unique build IDs to bust cache
-  generateBuildId: async () => {
-    return `build-${Date.now()}`
   },
 };
 
